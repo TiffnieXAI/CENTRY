@@ -1,0 +1,278 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Centry | Register Account</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;family=Geist:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0b1326;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        .glass-panel {
+            background: rgba(23, 31, 51, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .input-glow:focus {
+            box-shadow: 0 0 15px rgba(32, 38, 130, 0.6);
+            border-color: #bec2ff;
+        }
+        .submit-glow {
+            box-shadow: 0 0 20px rgba(32, 38, 130, 0.4);
+        }
+        .submit-glow:hover {
+            box-shadow: 0 0 30px rgba(32, 38, 130, 0.6);
+        }
+        .grid-bg {
+            background-image: 
+                linear-gradient(rgba(32, 38, 130, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(32, 38, 130, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+    </style>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#bec2ff",
+                        "primary-container": "#202682",
+                        "on-surface": "#dae2fd",
+                        "on-surface-variant": "#c7c5d4",
+                        "surface": "#0b1326",
+                        "surface-container-lowest": "#060e20",
+                        "surface-container-low": "#131b2e",
+                        "outline-variant": "#464652",
+                        "outline": "#908f9d",
+                        "error": "#ffb4ab"
+                    },
+                    "borderRadius": {
+                        "lg": "0.5rem",
+                        "xl": "0.75rem"
+                    },
+                    "spacing": {
+                        "sm": "16px",
+                        "md": "24px",
+                        "lg": "32px",
+                        "xl": "48px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Geist"],
+                        "body": ["Inter"],
+                        "mono": ["JetBrains Mono"]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen flex flex-col bg-surface text-on-surface grid-bg">
+    <!-- TopNavBar -->
+    <header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-white/10 shadow-[0_0_15px_rgba(32,38,130,0.4)] h-16 flex items-center justify-between px-xl">
+        <div class="flex items-center gap-sm">
+            <img src="assets\centryLogo_noBG.png" class="h-10 w-auto" alt="Centry Shield Logo">
+            <div class="flex flex-col">
+                <span class="font-headline-md text-headline-md font-bold text-primary tracking-tight">Centry</span>
+                <span class="font-label-sm text-label-sm text-on-surface-variant hidden md:block opacity-70">Cybersecurity for the backbone of the Philippine economy</span>
+            </div>
+        </div>
+        <button class="flex items-center gap-xs text-on-surface-variant hover:text-primary transition-colors duration-200 group active:scale-95" onclick="window.history.back()">
+            <span class="material-symbols-outlined text-[20px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
+            <span class="font-label-md text-label-md uppercase tracking-wider">Back</span>
+        </button>
+    </header>
+
+
+    <main class="flex-grow flex items-center justify-center p-6 pt-32 pb-20 relative">
+        <div class="w-full max-w-4xl relative z-10">
+            <div class="glass-panel p-8 lg:p-12 rounded-xl border border-white/10">
+                <div class="text-center mb-10">
+                    <h1 class="font-headline text-4xl lg:text-5xl font-bold text-primary mb-2">Register your Account</h1>
+                    <p class="font-body text-lg text-on-surface-variant">Secure your business with Centry's elite protection protocol.</p>
+                    <div class="mt-4 inline-flex items-center gap-1.5 px-3 py-1 bg-error/10 border border-error/20 rounded-full">
+                        <span class="material-symbols-outlined text-error text-xs">priority_high</span>
+                        <span class="font-mono text-[10px] text-error uppercase font-bold tracking-wider">Required Fields</span>
+                    </div>
+                </div>
+
+                <form class="space-y-10" id="registrationForm">
+                    <!-- Personal Info Section -->
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3 pb-2 border-b border-white/5">
+                            <span class="material-symbols-outlined text-primary">person</span>
+                            <h3 class="font-headline text-xl text-on-surface font-semibold">Representative Information</h3>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="block font-mono text-xs text-on-surface-variant uppercase tracking-wider">Given Name <span class="text-error">*</span></label>
+                                <input class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-lg px-4 py-3 text-on-surface focus:outline-none input-glow transition-all font-body" id="givenName" placeholder="Juan" required="" type="text">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block font-mono text-xs text-on-surface-variant uppercase tracking-wider">Surname <span class="text-error">*</span></label>
+                                <input class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-lg px-4 py-3 text-on-surface focus:outline-none input-glow transition-all font-body" id="surname" placeholder="Dela Cruz" required="" type="text">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="block font-mono text-xs text-on-surface-variant uppercase tracking-wider">Birthdate <span class="text-error">*</span></label>
+                                <input class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-lg px-4 py-3 text-on-surface focus:outline-none input-glow transition-all font-body" id="birthdate" placeholder="DD/MM/YYYY" required="" type="text">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block font-mono text-xs text-on-surface-variant uppercase tracking-wider">City &amp; Region <span class="text-error">*</span></label>
+                                <input class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-lg px-4 py-3 text-on-surface focus:outline-none input-glow transition-all font-body" id="address" placeholder="Makati, NCR" required="" type="text">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Contact Info Section -->
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3 pb-2 border-b border-white/5">
+                            <span class="material-symbols-outlined text-primary">contact_mail</span>
+                            <h3 class="font-headline text-xl text-on-surface font-semibold">Contact Credentials</h3>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="block font-mono text-xs text-on-surface-variant uppercase tracking-wider">Email Address <span class="text-error">*</span></label>
+                                <input class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-lg px-4 py-3 text-on-surface focus:outline-none input-glow transition-all font-body" id="email" placeholder="example@email.com" required="" type="email">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block font-mono text-xs text-on-surface-variant uppercase tracking-wider">Phone Number <span class="text-error">*</span></label>
+                                <input class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-lg px-4 py-3 text-on-surface focus:outline-none input-glow transition-all font-body" id="phone" placeholder="+63 917 123 4567" required="" type="tel">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Business Info Section -->
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3 pb-2 border-b border-white/5">
+                            <span class="material-symbols-outlined text-primary">business_center</span>
+                            <h3 class="font-headline text-xl text-on-surface font-semibold">Business Validation</h3>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="block font-mono text-xs text-on-surface-variant uppercase tracking-wider">Business Name <span class="text-error">*</span></label>
+                                <input class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-lg px-4 py-3 text-on-surface focus:outline-none input-glow transition-all font-body" id="businessName" placeholder="e.g., SAGE Systems" required="" type="text">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block font-mono text-xs text-on-surface-variant uppercase tracking-wider">Business Type <span class="text-error">*</span></label>
+                                <input class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-lg px-4 py-3 text-on-surface focus:outline-none input-glow transition-all font-body" id="businessType" placeholder="e.g., Corporation" required="" type="text">
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <label class="block font-mono text-xs text-on-surface-variant uppercase tracking-wider">Upload Business Permit <span class="text-error">*</span></label>
+                            <div class="relative group">
+                                <input type="file" id="businessPermit" class="hidden" required="">
+                                <div onclick="document.getElementById('businessPermit').click()" class="w-full bg-surface-container-lowest border-2 border-dashed border-outline-variant/30 rounded-xl p-10 flex flex-col items-center justify-center gap-4 transition-all group-hover:border-primary/50 group-hover:bg-primary-container/10 cursor-pointer">
+                                    <div class="w-16 h-16 rounded-full bg-primary-container/30 flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-primary text-4xl">cloud_upload</span>
+                                    </div>
+                                    <div class="text-center">
+                                        <p class="font-body text-on-surface font-medium">Click or drag permit to upload</p>
+                                        <p class="font-mono text-[10px] text-outline uppercase mt-1">JPG, PNG or PDF (Max 5MB)</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security Section -->
+                    <div class="space-y-6">
+                        <div class="flex items-center gap-3 pb-2 border-b border-white/5">
+                            <span class="material-symbols-outlined text-primary">security</span>
+                            <h3 class="font-headline text-xl text-on-surface font-semibold">Security Protocol</h3>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block font-mono text-xs text-on-surface-variant uppercase tracking-wider">System Username <span class="text-error">*</span></label>
+                            <input class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-lg px-4 py-3 text-on-surface focus:outline-none input-glow transition-all font-body" id="username" placeholder="cyber_sentinel_01" required="" type="text">
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="block font-mono text-xs text-on-surface-variant uppercase tracking-wider">Terminal Password <span class="text-error">*</span></label>
+                                <input class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-lg px-4 py-3 text-on-surface focus:outline-none input-glow transition-all font-body" id="password" required="" type="password">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block font-mono text-xs text-on-surface-variant uppercase tracking-wider">Confirm Password <span class="text-error">*</span></label>
+                                <input class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-lg px-4 py-3 text-on-surface focus:outline-none input-glow transition-all font-body" id="confirmPassword" required="" type="password">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col items-center gap-6 pt-6">
+                        <!-- This button only redirects to dashboad. This will not collect user inputs yet-->
+                        <button class="w-full md:w-auto md:min-w-[280px] px-10 py-5 bg-primary-container text-primary font-bold rounded-xl border border-primary/30 shadow-[0_0_15px_rgba(32,38,130,0.4)] hover:bg-primary-container/80 transition-all duration-300 active:scale-95 flex items-center justify-center gap-3 group submit-glow" id="submitBtn" type="submit" onclick="window.location.href='otp.html';"> 
+                            <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">bolt</span>
+                            <span class="font-headline text-xl">Establish Connection</span>
+                        </button>
+                        <p class="font-body text-on-surface-variant">
+                            Already verified? 
+                            <a class="text-primary hover:underline font-semibold transition-all ml-1" href="signin.html">Sign In</a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-surface-container-lowest border-t border-white/5 py-12 px-6 lg:px-12 mt-auto">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="flex flex-col items-center md:items-start">
+                <span class="font-headline text-3xl font-black text-on-surface tracking-tighter">SAGE</span>
+                <p class="font-mono text-[10px] text-outline uppercase mt-1">
+                    © 2024 SAGE. Cybersecurity for the backbone of the Philippine economy.
+                </p>
+            </div>
+            <nav class="flex flex-wrap justify-center gap-8">
+                <a class="font-mono text-[10px] text-outline hover:text-primary transition-colors tracking-widest" href="#">ABOUT US</a>
+                <a class="font-mono text-[10px] text-outline hover:text-primary transition-colors tracking-widest" href="#">CONTACT</a>
+                <a class="font-mono text-[10px] text-outline hover:text-primary transition-colors tracking-widest" href="#">TERMS</a>
+                <a class="font-mono text-[10px] text-outline hover:text-primary transition-colors tracking-widest" href="#">COOKIE POLICY</a>
+            </nav>
+        </div>
+    </footer>
+
+    <script>
+        // Form Interaction
+        const form = document.getElementById('registrationForm');
+        const submitBtn = document.getElementById('submitBtn');
+        
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            submitBtn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span> <span class="font-headline text-xl">Connecting...</span>';
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
+            
+            setTimeout(() => {
+                submitBtn.innerHTML = '<span class="material-symbols-outlined">check_circle</span> <span class="font-headline text-xl">Connection Established</span>';
+                submitBtn.classList.remove('bg-primary-container', 'border-primary/30');
+                submitBtn.classList.add('bg-green-600', 'border-green-400');
+            }, 2000);
+        });
+
+        // File upload visual feedback
+        const fileInput = document.getElementById('businessPermit');
+        fileInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const fileName = this.files[0].name;
+                const container = this.parentElement.previousElementSibling;
+                container.innerHTML = `
+                    <div class="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-green-400 text-4xl">check_circle</span>
+                    </div>
+                    <div class="text-center">
+                        <p class="font-body text-on-surface font-medium">Permit Uploaded Successfully</p>
+                        <p class="font-mono text-[10px] text-green-400 uppercase mt-1">${fileName}</p>
+                    </div>
+                `;
+            }
+        });
+    </script>
+
+
+</body></html>

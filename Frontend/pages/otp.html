@@ -1,0 +1,260 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Centry | Identity Verification</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;family=Geist:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0b1326;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        .glass-card {
+            background: rgba(23, 31, 51, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .otp-input:focus {
+            box-shadow: 0 0 15px rgba(32, 38, 130, 0.6);
+            border-color: #bec2ff;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface": "#dae2fd",
+                        "surface-tint": "#bec2ff",
+                        "tertiary-container": "#420094",
+                        "on-primary-container": "#8c93f2",
+                        "secondary": "#c6c6c7",
+                        "surface-container-low": "#131b2e",
+                        "primary-fixed-dim": "#bec2ff",
+                        "on-error-container": "#ffdad6",
+                        "on-primary": "#1d237f",
+                        "surface-container-lowest": "#060e20",
+                        "surface-bright": "#31394d",
+                        "primary": "#bec2ff",
+                        "on-secondary-container": "#b4b5b5",
+                        "tertiary-fixed": "#eaddff",
+                        "outline-variant": "#464652",
+                        "surface-container-highest": "#2d3449",
+                        "on-primary-fixed": "#00016d",
+                        "on-error": "#690005",
+                        "surface-container-high": "#222a3d",
+                        "on-secondary-fixed": "#1a1c1c",
+                        "surface-dim": "#0b1326",
+                        "on-background": "#dae2fd",
+                        "surface-container": "#171f33",
+                        "on-tertiary-fixed-variant": "#5a00c6",
+                        "surface-variant": "#2d3449",
+                        "on-tertiary-fixed": "#25005a",
+                        "on-surface-variant": "#c7c5d4",
+                        "on-primary-fixed-variant": "#363c96",
+                        "tertiary": "#d2bbff",
+                        "inverse-surface": "#dae2fd",
+                        "error": "#ffb4ab",
+                        "primary-container": "#202682",
+                        "on-tertiary": "#3f008e",
+                        "primary-fixed": "#e0e0ff",
+                        "inverse-on-surface": "#283044",
+                        "background": "#0b1326",
+                        "tertiary-fixed-dim": "#d2bbff",
+                        "error-container": "#93000a",
+                        "on-secondary-fixed-variant": "#454747",
+                        "secondary-fixed-dim": "#c6c6c7",
+                        "secondary-container": "#454747",
+                        "outline": "#908f9d",
+                        "inverse-primary": "#4e55b0",
+                        "surface": "#0b1326",
+                        "on-tertiary-container": "#ad85ff",
+                        "on-secondary": "#2f3131",
+                        "secondary-fixed": "#e2e2e2"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "lg": "32px",
+                        "gutter": "20px",
+                        "sm": "16px",
+                        "md": "24px",
+                        "xl": "48px",
+                        "sidebar_width": "280px",
+                        "base": "4px",
+                        "xs": "8px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Geist"],
+                        "body-lg": ["Inter"],
+                        "label-sm": ["JetBrains Mono"],
+                        "label-md": ["JetBrains Mono"],
+                        "headline-md": ["Geist"],
+                        "display": ["Geist"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="min-h-screen flex flex-col bg-background text-on-surface selection:bg-primary-container selection:text-primary">
+<header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-white/10 flex items-center justify-between px-xl h-16 shadow-[0_0_15px_rgba(32,38,130,0.4)]">
+    <div class="flex items-center gap-xs">
+        <div class="w-8 h-8 flex items-center justify-center bg-primary-container rounded-lg">
+            <span class="material-symbols-outlined text-primary text-xl" style="font-variation-settings: 'FILL' 1;">shield</span>
+        </div>
+        <div class="flex flex-col ml-1">
+            <span class="font-headline-md text-headline-md font-bold text-primary tracking-tight leading-none">Centry</span>
+            <span class="text-[8px] text-on-surface-variant font-medium tracking-tighter uppercase leading-none mt-0.5">Cybersecurity for the backbone of the Philippine economy</span>
+        </div>
+    </div>
+    <button class="flex items-center gap-xs text-on-surface-variant hover:text-primary transition-colors duration-200 font-label-md text-label-md active:scale-95 transition-transform" onclick="window.history.back()">
+        <span class="material-symbols-outlined text-base">arrow_back</span>
+        Back
+    </button>
+</header>
+<main class="flex-grow flex items-center justify-center p-md relative overflow-hidden pt-24 pb-16">
+    <div class="absolute inset-0 z-0 pointer-events-none opacity-20" style="background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0); background-size: 40px 40px;"></div>
+    <div class="relative z-10 w-full max-w-[540px]">
+        <div class="glass-card p-xl rounded-xl border border-white/10 flex flex-col items-center text-center">
+            <div class="mb-lg">
+                <div class="w-16 h-16 mx-auto mb-md relative">
+                    <div class="absolute inset-0 bg-primary/20 blur-xl rounded-full"></div>
+                    <span class="material-symbols-outlined text-primary text-5xl relative z-10" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+                </div>
+                <h1 class="font-headline-lg text-headline-lg text-on-surface mb-xs">Security Protocol: OTP</h1>
+                <p class="font-body-md text-body-md text-on-surface-variant max-w-sm">
+                    A 6-digit verification code has been sent to your registered mobile number via SMS.
+                </p>
+            </div>
+            <div class="w-full space-y-lg">
+                <div class="flex gap-xs justify-center" id="otp-container">
+                    <input class="otp-input w-12 h-14 bg-surface-container-lowest border border-outline-variant rounded-lg text-center text-headline-md font-bold text-primary focus:outline-none transition-all duration-200" maxlength="1" oninput="moveToNext(this, 0)" onkeydown="handleBackspace(event, 0)" type="number">
+                    <input class="otp-input w-12 h-14 bg-surface-container-lowest border border-outline-variant rounded-lg text-center text-headline-md font-bold text-primary focus:outline-none transition-all duration-200" maxlength="1" oninput="moveToNext(this, 1)" onkeydown="handleBackspace(event, 1)" type="number">
+                    <input class="otp-input w-12 h-14 bg-surface-container-lowest border border-outline-variant rounded-lg text-center text-headline-md font-bold text-primary focus:outline-none transition-all duration-200" maxlength="1" oninput="moveToNext(this, 2)" onkeydown="handleBackspace(event, 2)" type="number">
+                    <input class="otp-input w-12 h-14 bg-surface-container-lowest border border-outline-variant rounded-lg text-center text-headline-md font-bold text-primary focus:outline-none transition-all duration-200" maxlength="1" oninput="moveToNext(this, 3)" onkeydown="handleBackspace(event, 3)" type="number">
+                    <input class="otp-input w-12 h-14 bg-surface-container-lowest border border-outline-variant rounded-lg text-center text-headline-md font-bold text-primary focus:outline-none transition-all duration-200" maxlength="1" oninput="moveToNext(this, 4)" onkeydown="handleBackspace(event, 4)" type="number">
+                    <input class="otp-input w-12 h-14 bg-surface-container-lowest border border-outline-variant rounded-lg text-center text-headline-md font-bold text-primary focus:outline-none transition-all duration-200" maxlength="1" oninput="moveToNext(this, 5)" onkeydown="handleBackspace(event, 5)" type="number">
+                </div>
+                <div class="flex flex-col items-center gap-xs">
+                    <div class="flex items-center gap-xs text-on-surface-variant font-label-md text-label-md">
+                        <span class="material-symbols-outlined text-sm">schedule</span>
+                        <span>Code valid for <span class="text-primary font-bold" id="timer">01:59</span></span>
+                    </div>
+                    <button class="text-primary hover:text-tertiary font-label-md text-label-md transition-colors duration-200 opacity-100 hover:opacity-80">
+                        Didn't receive the code? Resend OTP
+                    </button>
+                </div>
+                <button class="w-full py-md bg-primary-container text-primary font-bold rounded-lg border border-primary/30 shadow-[0_0_15px_rgba(32,38,130,0.4)] disabled:opacity-30 disabled:cursor-not-allowed disabled:shadow-none hover:bg-primary-container/80 transition-all duration-200 active:scale-95 flex items-center justify-center gap-xs group" disabled="" id="verify-btn">
+                    <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">lock_open</span>
+                    Verify &amp; Connect
+                </button>
+            </div>
+            <div class="mt-xl border-t border-white/5 pt-lg w-full">
+                <p class="font-label-sm text-label-sm text-on-surface-variant italic">
+                    "Cybersecurity for the backbone of the Philippine economy"
+                </p>
+            </div>
+        </div>
+    </div>
+</main>
+<footer class="w-full bg-surface-container-lowest border-t border-outline-variant flex flex-col md:flex-row justify-between items-center px-xl py-lg gap-md relative z-10">
+    <div class="flex flex-col items-center md:items-start gap-xs">
+        <div class="font-headline-sm text-[20px] font-black text-on-surface tracking-tighter">SAGE</div>
+        <p class="font-label-sm text-label-sm text-on-surface-variant text-center md:text-left">
+            © 2024 SAGE. Cybersecurity for the backbone of the Philippine economy.
+        </p>
+    </div>
+    <div class="flex gap-lg">
+        <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">About Us</a>
+        <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Contact</a>
+        <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Terms</a>
+        <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Cookie Policy</a>
+    </div>
+</footer>
+<script>
+    const inputs = document.querySelectorAll('.otp-input');
+    const verifyBtn = document.getElementById('verify-btn');
+    function moveToNext(el, index) {
+        if (el.value.length > 1) {
+            el.value = el.value.slice(0, 1);
+        }
+        if (el.value.length === 1 && index < 5) {
+            inputs[index + 1].focus();
+        }
+        checkInputs();
+    }
+    function handleBackspace(event, index) {
+        if (event.key === "Backspace" && !inputs[index].value && index > 0) {
+            inputs[index - 1].focus();
+        }
+    }
+    function checkInputs() {
+        const allFilled = Array.from(inputs).every(input => input.value.length === 1);
+        verifyBtn.disabled = !allFilled;
+    }
+    let timeLeft = 120;
+    const timerDisplay = document.getElementById('timer');
+    const countdown = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        let seconds = timeLeft % 60;
+        seconds = seconds < 10 ? '0' + seconds : seconds;
+        timerDisplay.textContent = `0${minutes}:${seconds}`;
+        if (timeLeft <= 0) {
+            clearInterval(countdown);
+            timerDisplay.textContent = 'Expired';
+            timerDisplay.classList.remove('text-primary');
+            timerDisplay.classList.add('text-error');
+        } else {
+            timeLeft--;
+        }
+    }, 1000);
+    window.onload = () => {
+        inputs[0].focus();
+    };
+    verifyBtn.addEventListener('click', () => {
+
+        // TODO: Implement actual OTP verification logic here. For now, we simulate a successful verification.
+        if (!verifyBtn.disabled) {
+            verifyBtn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span> Validating...';
+            setTimeout(() => {
+                verifyBtn.innerHTML = '<span class="material-symbols-outlined">check_circle</span> Verified';
+                verifyBtn.classList.remove('bg-primary-container');
+                verifyBtn.classList.add('bg-green-600', 'border-green-400');
+            }, 1500);
+            
+            setTimeout(() => {
+                window.location.href = "connect.html";
+            }, 3000);
+        }
+    });
+</script>
+
+</body></html>
