@@ -1,7 +1,8 @@
 from typing import Optional
+from urllib.parse import urlencode
 
 from fastapi import APIRouter, Depends, Query, HTTPException, status
-from fastapi.responses import HTMLResponse
+from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -37,6 +38,12 @@ async def oauth_callback(platform: PlatformType,
     browser here directly, with no way to attach a Bearer token. The `state`
     param (generated in /authorize) is what ties this callback back to the
     user who started the flow - see create_oauth_state_token.
+
+    The seller lands here in *their own* browser tab (Shopee/Lazada/TikTok
+    redirected them), so on the way out we bounce them back to the frontend's
+    connect page with the result in the query string - connect.html reads
+    `connected`/`status`/`detail` and refreshes the button states from
+    GET /api/v1/oauth/connections.
     """
     try:
         extra = {}
@@ -44,13 +51,20 @@ async def oauth_callback(platform: PlatformType,
             extra["shop_id"] = shop_id
         await oauth_service.complete_authorization(db, platform, code, state, **extra)
     except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+        # Bad/expired state token, or a token exchange the provider rejected.
+        # Send the browser home with the reason rather than a bare JSON error.
+        return _back_to_connect(platform, "error", str(e))
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=f"Failed to connect: {e}")
 
-    # Minimal confirmation page. Replace with a redirect to a deep link back
-    # into the mobile/web app once that flow is designed (e.g. centry://connected).
-    return HTMLResponse(f"<h2>{platform.value} connected successfully.</h2><p>You can close this window.</p>")
+    return _back_to_connect(platform, "connected")
+
+
+def _back_to_connect(platform: PlatformType, result: str, detail: Optional[str] = None) -> RedirectResponse:
+    params = {"connected": platform.value, "status": result}
+    if detail:
+        params["detail"] = detail
+    return RedirectResponse(url=f"/connect.html?{urlencode(params)}")
 
 
 @router.get("/connections", response_model=list[PlatformConnectionResponse])
