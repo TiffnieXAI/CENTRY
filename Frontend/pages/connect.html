@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Centry | Connect Business</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500;700&amp;family=Geist:wght@400;600;700;800&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <style>
+        body {
+            background-color: #0b1326;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        .glass-panel {
+            background: rgba(23, 31, 51, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .input-glow:focus {
+            box-shadow: 0 0 15px rgba(32, 38, 130, 0.6);
+            border-color: #bec2ff;
+        }
+        .submit-glow {
+            box-shadow: 0 0 20px rgba(32, 38, 130, 0.4);
+        }
+        .submit-glow:hover {
+            box-shadow: 0 0 30px rgba(32, 38, 130, 0.6);
+        }
+        .grid-bg {
+            background-image:
+                linear-gradient(rgba(32, 38, 130, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(32, 38, 130, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        /* Fix for disabled button styling */
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        /* Fix for connecting state */
+        .connecting {
+            opacity: 0.8;
+            cursor: wait;
+        }
+        /* Fix for connected state */
+        .bg-green-600 {
+            background-color: #16a34a !important;
+        }
+        .border-green-400 {
+            border-color: #4ade80 !important;
+        }
+        /* Animation for spinning icon */
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+    </style>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#bec2ff",
+                        "primary-container": "#202682",
+                        "on-surface": "#dae2fd",
+                        "on-surface-variant": "#c7c5d4",
+                        "surface": "#0b1326",
+                        "surface-container-lowest": "#060e20",
+                        "surface-container-low": "#131b2e",
+                        "outline-variant": "#464652",
+                        "outline": "#908f9d",
+                        "error": "#ffb4ab"
+                    },
+                    borderRadius: {
+                        "lg": "0.5rem",
+                        "xl": "0.75rem"
+                    },
+                    spacing: {
+                        "sm": "16px",
+                        "md": "24px",
+                        "lg": "32px",
+                        "xl": "48px"
+                    },
+                    fontFamily: {
+                        "headline": ["Geist"],
+                        "body": ["Inter"],
+                        "mono": ["JetBrains Mono"]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen flex flex-col bg-surface text-on-surface grid-bg">
+
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-white/10 shadow-[0_0_15px_rgba(32,38,130,0.4)] h-16 flex items-center justify-between px-xl">
+    <div class="flex items-center gap-sm">
+        <img src="assets/centryLogo_noBG.png" class="h-10 w-auto" alt="Centry Shield Logo">
+        <div class="flex flex-col">
+            <span class="font-headline-md text-headline-md font-bold text-primary tracking-tight">Centry</span>
+            <span class="font-label-sm text-label-sm text-on-surface-variant hidden md:block opacity-70">Cybersecurity for the backbone of the Philippine economy</span>
+        </div>
+    </div>
+    <button class="flex items-center gap-xs text-on-surface-variant hover:text-primary transition-colors duration-200 group active:scale-95" onclick="window.history.back()">
+        <span class="material-symbols-outlined text-[20px] group-hover:-translate-x-1 transition-transform">arrow_back</span>
+        <span class="font-label-md text-label-md uppercase tracking-wider">Back</span>
+    </button>
+</header>
+
+<!-- Main Content -->
+<main class="flex-grow flex items-center justify-center p-6 pt-32 pb-20 relative">
+    <div class="w-full max-w-4xl relative z-10">
+        <div class="glass-panel p-8 lg:p-12 rounded-xl border border-white/10 flex flex-col items-center">
+
+            <!-- Page Header -->
+            <div class="text-center mb-10 w-full">
+                <h1 class="font-headline text-4xl lg:text-5xl font-bold text-primary mb-2">Connect Your Business</h1>
+                <p class="font-body text-lg text-on-surface-variant max-w-lg mx-auto">Link your business nodes to Centry for real-time protection and monitoring.</p>
+            </div>
+
+            <!-- Input Section -->
+            <div class="mb-10 w-full max-w-lg">
+                <label class="block font-mono text-xs text-on-surface-variant uppercase tracking-wider mb-2">Business Email Address <span class="text-error">*</span></label>
+                <div class="relative">
+                    <input class="w-full bg-surface-container-lowest border border-outline-variant/50 rounded-lg px-4 py-3 pr-10 text-on-surface focus:outline-none input-glow transition-all font-body" placeholder="admin@enterprise.com" type="email" id="userEmail" required>
+                    <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
+                        <span class="material-symbols-outlined text-outline">alternate_email</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Integration Section -->
+            <div class="w-full space-y-6">
+                <div class="flex items-center gap-3 pb-2 border-b border-white/5 w-full">
+                    <span class="material-symbols-outlined text-primary">storefront</span>
+                    <h3 class="font-headline text-xl text-on-surface font-semibold">Connect to E-Commerce Platform</h3>
+                </div>
+
+                <div class="grid grid-cols-1 gap-4">
+
+                    <!-- Shopee -->
+                    <div class="flex items-center justify-between p-4 rounded-xl bg-surface-container-lowest border border-outline-variant/30 transition-all hover:border-outline-variant/60">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-lg bg-primary-container/20 flex items-center justify-center text-primary border border-primary/20">
+                                <span class="material-symbols-outlined text-2xl">shopping_bag</span>
+                            </div>
+                            <span class="font-body text-lg font-semibold text-on-surface">Shopee</span>
+                        </div>
+                        <button class="px-6 py-2.5 bg-primary-container text-primary font-bold font-headline rounded-lg border border-primary/30 shadow-[0_0_10px_rgba(32,38,130,0.3)] hover:bg-primary-container/80 transition-all active:scale-95 flex items-center gap-2 submit-glow" id="connectShopee" data-name="Shopee" disabled>
+                            <span>Connect</span>
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        </button>
+                    </div>
+
+                    <!-- Lazada -->
+                    <div class="flex items-center justify-between p-4 rounded-xl bg-surface-container-lowest border border-outline-variant/30 transition-all hover:border-outline-variant/60">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-lg bg-primary-container/20 flex items-center justify-center text-primary border border-primary/20">
+                                <span class="material-symbols-outlined text-2xl">storefront</span>
+                            </div>
+                            <span class="font-body text-lg font-semibold text-on-surface">Lazada</span>
+                        </div>
+                        <button class="px-6 py-2.5 bg-primary-container text-primary font-bold font-headline rounded-lg border border-primary/30 shadow-[0_0_10px_rgba(32,38,130,0.3)] hover:bg-primary-container/80 transition-all active:scale-95 flex items-center gap-2 submit-glow" id="connectLazada" data-name="Lazada" disabled>
+                            <span>Connect</span>
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        </button>
+                    </div>
+
+                    <!-- Temu -->
+                    <div class="flex items-center justify-between p-4 rounded-xl bg-surface-container-lowest border border-outline-variant/30 transition-all hover:border-outline-variant/60">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-lg bg-primary-container/20 flex items-center justify-center text-primary border border-primary/20">
+                                <span class="material-symbols-outlined text-2xl">package_2</span>
+                            </div>
+                            <span class="font-body text-lg font-semibold text-on-surface">Temu</span>
+                        </div>
+                        <button class="px-6 py-2.5 bg-primary-container text-primary font-bold font-headline rounded-lg border border-primary/30 shadow-[0_0_10px_rgba(32,38,130,0.3)] hover:bg-primary-container/80 transition-all active:scale-95 flex items-center gap-2 submit-glow" id="connectTemu" data-name="Temu" disabled>
+                            <span>Connect</span>
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        </button>
+                    </div>
+
+                    <!-- Shein -->
+                    <div class="flex items-center justify-between p-4 rounded-xl bg-surface-container-lowest border border-outline-variant/30 transition-all hover:border-outline-variant/60">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-lg bg-primary-container/20 flex items-center justify-center text-primary border border-primary/20">
+                                <span class="material-symbols-outlined text-2xl">checkroom</span>
+                            </div>
+                            <span class="font-body text-lg font-semibold text-on-surface">Shein</span>
+                        </div>
+                        <button class="px-6 py-2.5 bg-primary-container text-primary font-bold font-headline rounded-lg border border-primary/30 shadow-[0_0_10px_rgba(32,38,130,0.3)] hover:bg-primary-container/80 transition-all active:scale-95 flex items-center gap-2 submit-glow" id="connectShein" data-name="Shein" disabled>
+                            <span>Connect</span>
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        </button>
+                    </div>
+
+                    <!-- TikTok Shop -->
+                    <div class="flex items-center justify-between p-4 rounded-xl bg-surface-container-lowest border border-outline-variant/30 transition-all hover:border-outline-variant/60">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-lg bg-primary-container/20 flex items-center justify-center text-primary border border-primary/20">
+                                <span class="material-symbols-outlined text-2xl">music_video</span>
+                            </div>
+                            <span class="font-body text-lg font-semibold text-on-surface">TikTok Shop</span>
+                        </div>
+                        <button class="px-6 py-2.5 bg-primary-container text-primary font-bold font-headline rounded-lg border border-primary/30 shadow-[0_0_10px_rgba(32,38,130,0.3)] hover:bg-primary-container/80 transition-all active:scale-95 flex items-center gap-2 submit-glow" id="connectTikTok" data-name="TikTok Shop" disabled>
+                            <span>Connect</span>
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Action Section / Redirect to Dashboard -->
+            <div class="mt-10 pt-6 border-t border-white/5 w-full flex justify-center">
+                <button class="w-full md:w-auto md:min-w-[320px] px-10 py-4 bg-primary-container text-primary font-bold rounded-xl border border-primary/30 shadow-[0_0_15px_rgba(32,38,130,0.4)] hover:bg-primary-container/80 transition-all duration-300 active:scale-95 flex items-center justify-center gap-3 group submit-glow" onclick="window.location.href='dashboard.html';">
+                    <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">dashboard</span>
+                    <span class="font-headline text-lg">Continue to Dashboard</span>
+                </button>
+            </div>
+
+            <!-- Tagline Footer inside panel -->
+            <div class="mt-8 text-center">
+                <p class="font-mono text-xs text-on-surface-variant italic opacity-70">
+                    "Cybersecurity for the backbone of the Philippine economy"
+                </p>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Footer -->
+<footer class="w-full bg-surface-container-lowest border-t border-outline-variant flex flex-col md:flex-row justify-between items-center px-xl py-lg gap-md relative z-10">
+    <div class="flex flex-col items-center md:items-start gap-xs">
+        <div class="font-headline-sm text-[20px] font-black text-on-surface tracking-tighter">SAGE</div>
+        <p class="font-label-sm text-label-sm text-on-surface-variant text-center md:text-left">
+            © 2024 SAGE. Cybersecurity for the backbone of the Philippine economy.
+        </p>
+    </div>
+    <div class="flex gap-lg">
+        <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">About Us</a>
+        <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Contact</a>
+        <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Terms</a>
+        <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Cookie Policy</a>
+    </div>
+</footer>
+
+<script>
+    // Represents a single marketplace connect button: owns its own
+    // state (disconnected / connecting / connected) and re-renders itself.
+    class Marketplace {
+        constructor(buttonId) {
+            this.button = document.getElementById(buttonId);
+            this.name = this.button.dataset.name; // read name from data-name instead of hardcoding
+            this.status = "disconnected";
+            this.button.addEventListener("click", this.handleClick.bind(this));
+        }
+
+        handleClick() {
+            if (this.status !== "disconnected") return; // ignore mid-animation / already-connected clicks
+            this.status = "connecting";
+            this.render();
+
+            // TODO: replace with a real async connection call.
+            // Assuming success for now, per current requirements.
+            setTimeout(() => {
+                this.status = "connected";
+                this.render();
+            }, 2000);
+        }
+
+        // Enable/disable this button based on whether the email input is valid.
+        // Only takes effect while still disconnected — a connecting/connected
+        // button should never be re-disabled by editing the email afterwards.
+        setEnabled(enabled) {
+            if (this.status === "disconnected") {
+                this.button.disabled = !enabled;
+            }
+        }
+
+        render() {
+            // Remove previous state classes
+            this.button.classList.remove("connecting", "bg-green-600", "border-green-400");
+
+            if (this.status === "connecting") {
+                this.button.disabled = true;
+                this.button.classList.add("connecting");
+                this.button.innerHTML = `<span class="material-symbols-outlined animate-spin">sync</span> Connecting...`;
+            } else if (this.status === "connected") {
+                this.button.disabled = true; // Disable connected buttons
+                this.button.classList.add("bg-green-600", "border-green-400");
+                this.button.innerHTML = `Connected <span class="material-symbols-outlined">check_circle</span>`;
+            } else {
+                // Disconnected state
+                this.button.disabled = false;
+                this.button.innerHTML = `Connect`;
+            }
+        }
+    }
+
+    // Watches the email textarea and enables/disables every registered
+    // Marketplace button based on whether it currently holds a valid email.
+    class ConnectionManager {
+        constructor(emailInputId, marketplaces) {
+            this.emailInput = document.getElementById(emailInputId);
+            this.marketplaces = marketplaces;
+            this.emailInput.addEventListener("input", this.validate.bind(this));
+            this.validate(); // run once on load in case of a pre-filled value
+        }
+
+        isValidEmail(value) {
+            // simple, good-enough pattern — swap for a stricter regex if you need one
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+        }
+
+        validate() {
+            const enabled = this.isValidEmail(this.emailInput.value);
+            this.marketplaces.forEach((m) => m.setEnabled(enabled));
+        }
+    }
+
+    // One instance per button — no more copy-pasted listeners.
+    const marketplaces = [
+        new Marketplace("connectShopee"), // Fixed ID typo
+        new Marketplace("connectLazada"),
+        new Marketplace("connectTemu"),
+        new Marketplace("connectShein"),
+        new Marketplace("connectTikTok"),
+    ];
+
+    new ConnectionManager("userEmail", marketplaces);
+</script>
+
+</body>
+</html>

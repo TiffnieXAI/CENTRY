@@ -1,0 +1,481 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Centry | Cybersecurity for the Philippine Economy</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500;700&amp;family=Geist:wght@600;700;800&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-container": "#494e83",
+                    "inverse-primary": "#555a90",
+                    "surface-glass": "rgba(23, 31, 51, 0.4)",
+                    "on-tertiary-container": "#5b4883",
+                    "secondary-fixed-dim": "#c6c6c7",
+                    "outline": "#91909a",
+                    "secondary-fixed": "#e3e2e3",
+                    "primary": "#e0e0ff",
+                    "tertiary-fixed": "#eaddff",
+                    "inverse-on-surface": "#283044",
+                    "surface-container-highest": "#2d3449",
+                    "surface-container-low": "#131b2e",
+                    "surface-tint": "#bec2ff",
+                    "on-primary-fixed-variant": "#3e4276",
+                    "on-error-container": "#ffdad6",
+                    "on-secondary-container": "#b5b5b6",
+                    "surface": "#0b1326",
+                    "on-tertiary-fixed": "#230e48",
+                    "outline-variant": "#46464f",
+                    "on-error": "#690005",
+                    "secondary": "#c6c6c7",
+                    "surface-dim": "#0b1326",
+                    "primary-fixed": "#e0e0ff",
+                    "inverse-surface": "#dbe2fd",
+                    "primary-container": "#bec2ff",
+                    "on-secondary": "#2f3132",
+                    "alert-critical": "#ffb4ab",
+                    "tertiary-fixed-dim": "#d2bbff",
+                    "on-tertiary": "#38255e",
+                    "on-secondary-fixed-variant": "#454748",
+                    "surface-container-lowest": "#060d20",
+                    "surface-variant": "#2d3449",
+                    "on-tertiary-fixed-variant": "#4f3c76",
+                    "error": "#ffb4ab",
+                    "on-secondary-fixed": "#1a1c1d",
+                    "on-surface-variant": "#c7c5d0",
+                    "on-surface": "#dbe2fd",
+                    "success-glow": "#4ade80",
+                    "error-container": "#93000a",
+                    "background": "#0b1326",
+                    "tertiary-container": "#d3bcff",
+                    "surface-bright": "#31394e",
+                    "tertiary": "#ebddff",
+                    "surface-container": "#171f33",
+                    "primary-fixed-dim": "#bec2ff",
+                    "surface-obsidian": "#0b1326",
+                    "surface-container-high": "#222a3e",
+                    "secondary-container": "#454748",
+                    "on-background": "#dbe2fd",
+                    "on-primary": "#272b5e",
+                    "on-primary-fixed": "#111548",
+                    "radar-glow": "rgba(190, 194, 255, 0.15)"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "sidebar": "280px",
+                    "base": "4px",
+                    "md": "24px",
+                    "lg": "32px",
+                    "gutter": "20px",
+                    "xl": "48px",
+                    "xs": "8px",
+                    "sm": "16px"
+            },
+            "fontFamily": {
+                    "micro-label": ["JetBrains Mono"],
+                    "headline-md": ["Geist"],
+                    "label-sm": ["JetBrains Mono"],
+                    "label-md": ["JetBrains Mono"],
+                    "headline-lg": ["Geist"],
+                    "display": ["Geist"],
+                    "body-md": ["Inter"]
+            },
+            "fontSize": {
+                    "micro-label": ["10px", {"lineHeight": "12px", "letterSpacing": "0.15em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                    "display": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #0b1326;
+            color: #dbe2fd;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        .glass-panel {
+            background: rgba(23, 31, 51, 0.4);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-top-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .glow-hover:hover {
+            box-shadow: 0 0 20px rgba(190, 194, 255, 0.1);
+            border-color: rgba(190, 194, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .grid-bg {
+            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        /* Appear on Scroll Effect */
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .reveal {
+                transition-duration: 0s !important;
+                transform: none !important;
+            }
+        }
+
+        .scan-line {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #bec2ff, transparent);
+            position: absolute;
+            width: 100%;
+            top: 0;
+            animation: scan 3s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { top: 0%; opacity: 0; }
+            50% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+
+        .pulse-primary {
+            box-shadow: 0 0 0 0 rgba(190, 194, 255, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(190, 194, 255, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(190, 194, 255, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(190, 194, 255, 0); }
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+
+        .terminal-text {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .floating-ai {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #060d20; }
+        ::-webkit-scrollbar-thumb { background: #2d3449; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3e4276; }
+    </style>
+</head>
+<body class="font-body-md text-body-md selection:bg-primary selection:text-on-primary">
+<!-- <header class="sticky top-0 z-50 flex justify-between items-center h-20 px-md w-full max-w-7xl mx-auto bg-surface-glass/40 backdrop-blur-xl border-b border-white/10 shadow-2xl shadow-primary/5">
+<div class="flex items-center gap-sm">
+<img alt="Centry Logo" class="h-10 w-auto" src="assets\centryLogo_noBG.png">
+<span class="font-display text-headline-lg font-bold text-primary tracking-tight">Centry</span>
+</div>
+<nav class="hidden md:flex items-center gap-lg">
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-label-md text-label-md" href="#">Dashboard</a>
+<a class="text-on-surface-variant font-medium hover:text-primary-fixed-dim transition-colors duration-300 font-label-md text-label-md" href="#">Incident</a>
+<a class="text-on-surface-variant font-medium hover:text-primary-fixed-dim transition-colors duration-300 font-label-md text-label-md" href="#">Reports</a>
+<a class="text-on-surface-variant font-medium hover:text-primary-fixed-dim transition-colors duration-300 font-label-md text-label-md" href="#">Live Verify</a>
+<a class="text-on-surface-variant font-medium hover:text-primary-fixed-dim transition-colors duration-300 font-label-md text-label-md" href="#">Settings</a>
+</nav>
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-primary cursor-pointer active:scale-95 transition-transform">shield</span>
+<button class="bg-primary text-on-primary px-sm py-xs rounded-lg font-bold hover:shadow-[0_0_15px_rgba(190,194,255,0.4)] transition-all">Console Login</button>
+</div>
+</header> -->
+<main class="relative">
+<div class="fixed inset-0 grid-bg pointer-events-none z-0"></div>
+<div class="fixed top-0 left-1/4 w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full pointer-events-none z-0"></div>
+<div class="fixed bottom-0 right-1/4 w-[400px] h-[400px] bg-tertiary/5 blur-[100px] rounded-full pointer-events-none z-0"></div>
+<!-- HERO SECTION -->
+<section class="relative min-h-[90vh] flex flex-col items-center justify-center text-center px-md py-xl max-w-5xl mx-auto z-10">
+<div class="mb-sm reveal">
+<span class="inline-block px-sm py-1 bg-primary/10 text-primary border border-primary/20 rounded-full font-micro-label text-micro-label uppercase tracking-widest">
+                    Secure Philippines Digitally
+                </span>
+</div>
+<h1 class="font-display text-[56px] md:text-[84px] leading-[1.1] font-extrabold text-on-surface tracking-tighter mb-md reveal">
+                Your AI Cybersecurity <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-tertiary">Kuya</span> for Your Business
+            </h1>
+<p class="font-body-md text-headline-md text-on-surface-variant max-w-2xl mb-lg reveal">
+                Centry protects your digital business 24/7, explaining threats in simple Taglish and responding automatically.
+            </p>
+<div class="flex flex-col md:flex-row gap-md reveal">
+<button class="bg-primary text-on-primary text-headline-md px-lg py-md rounded-xl font-bold flex items-center gap-sm group active:scale-95 transition-all shadow-xl shadow-primary/20" onclick="window.location.href='register.html';">
+                    Start Protecting My Business
+                    <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+<button class="bg-surface-container-highest border border-outline-variant/30 text-on-surface text-headline-md px-lg py-md rounded-xl font-bold hover:bg-surface-bright transition-all">
+                    View Demo
+                </button>
+</div>
+<p class="mt-lg font-label-md text-on-surface-variant/60 reveal">
+                Cybersecurity for the backbone of the Philippine economy
+            </p>
+</section>
+<!-- THE PROBLEM -->
+<section class="relative py-xl px-md max-w-7xl mx-auto z-10 reveal">
+<div class="text-center mb-xl">
+<h2 class="font-display text-display mb-xs">The Problem</h2>
+<p class="font-headline-md text-on-surface-variant">Businesses get hacked through everyday tools</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+<div class="glass-panel p-lg rounded-xl glow-hover relative group reveal">
+<div class="w-12 h-12 rounded-lg bg-error/10 flex items-center justify-center mb-md border border-error/20">
+<span class="material-symbols-outlined text-error">mail</span>
+</div>
+<h3 class="font-headline-md mb-sm">📧 Email Compromise</h3>
+<p class="text-on-surface-variant">Hackers access admin accounts through sophisticated phishing, gaining keys to your entire digital kingdom.</p>
+</div>
+<div class="glass-panel p-lg rounded-xl glow-hover relative group reveal">
+<div class="w-12 h-12 rounded-lg bg-tertiary/10 flex items-center justify-center mb-md border border-tertiary/20">
+<span class="material-symbols-outlined text-tertiary">payments</span>
+</div>
+<h3 class="font-headline-md mb-sm">💳 Payment Fraud</h3>
+<p class="text-on-surface-variant">Stolen payment credentials and intercepted invoices drain business capital before you even notice.</p>
+</div>
+<div class="glass-panel p-lg rounded-xl glow-hover relative group reveal">
+<div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-md border border-primary/20">
+<span class="material-symbols-outlined text-primary">key</span>
+</div>
+<h3 class="font-headline-md mb-sm">🔑 Account Takeover</h3>
+<p class="text-on-surface-variant">Unauthorized access from foreign IPs bypasses basic passwords, locking you out of your own systems.</p>
+</div>
+</div>
+</section>
+<!-- ATTACK IN PROGRESS -->
+<section class="relative py-xl px-md max-w-7xl mx-auto z-10 reveal">
+<div class="flex flex-col lg:flex-row gap-xl items-center">
+<div class="lg:w-1/2 reveal">
+<h2 class="font-display text-display mb-xs">Attack in Progress</h2>
+<p class="font-headline-md text-on-surface-variant mb-lg">Watch how hackers infiltrate businesses while the owners sleep.</p>
+<div class="space-y-md">
+<div class="flex items-center gap-md p-sm glass-panel rounded-lg border-l-4 border-alert-critical reveal">
+<span class="material-symbols-outlined text-alert-critical shrink-0">warning</span>
+<p class="font-label-md">Global IP blacklist match detected from session #4402</p>
+</div>
+<div class="flex items-center gap-md p-sm glass-panel rounded-lg border-l-4 border-error reveal">
+<span class="material-symbols-outlined text-error shrink-0">dangerous</span>
+<p class="font-label-md">Unauthorized privilege escalation attempted on Admin panel</p>
+</div>
+</div>
+</div>
+<div class="lg:w-1/2 w-full reveal">
+<div class="glass-panel rounded-xl overflow-hidden shadow-2xl">
+<div class="bg-surface-container-highest px-md py-xs border-b border-white/10 flex justify-between items-center">
+<div class="flex gap-xs">
+<div class="w-3 h-3 rounded-full bg-red-500/50"></div>
+<div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+<div class="w-3 h-3 rounded-full bg-green-500/50"></div>
+</div>
+<span class="font-micro-label text-on-surface-variant">SENTINEL_LOG_STREAM.EXE</span>
+</div>
+<div class="p-lg terminal-text text-label-md h-80 overflow-y-auto space-y-xs bg-surface-container-lowest/80 relative">
+<div class="scan-line"></div>
+<p class="text-on-surface-variant">Connecting to neural core...</p>
+<p class="text-on-surface-variant">[10:22:01] <span class="text-secondary">SYSTEM:</span> Monitoring active sessions (24)</p>
+<p class="text-alert-critical">[10:22:45] <span class="text-error">WARNING:</span> 🌍 Login detected: Hanoi, Vietnam</p>
+<p class="text-alert-critical">[10:23:12] <span class="text-error">ALARM:</span> ⚠️ Suspicious activity: Email forwarding rule created</p>
+<p class="text-error font-bold">[10:23:14] <span class="text-error">CRITICAL:</span> 🚨 Stripe payout bank changed</p>
+<p class="text-primary font-bold animate-pulse mt-sm">[10:23:15] <span class="text-primary">SHIELD:</span> 🛡️ Centry activated...</p>
+<p class="text-primary">[10:23:15] Initiating threat isolation protocol Alpha-9</p>
+<p class="text-primary">[10:23:16] Lockdown sequence confirmed</p>
+<div class="inline-block w-2 h-4 bg-primary animate-pulse" id="cursor"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- CENTRY INVESTIGATES -->
+<section class="relative py-xl px-md max-w-7xl mx-auto z-10 reveal">
+<div class="text-center mb-xl">
+<h2 class="font-display text-display mb-xs">Centry Investigates</h2>
+<p class="font-headline-md text-on-surface-variant">AI analyzes patterns and reconstructs the attack timeline</p>
+</div>
+<div class="relative">
+<div class="absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-primary/30 to-transparent hidden md:block"></div>
+<div class="space-y-xl relative">
+<div class="flex flex-col md:flex-row gap-lg items-center reveal">
+<div class="md:w-1/2 md:text-right">
+<h4 class="font-display text-headline-md text-primary">10:23 AM</h4>
+<p class="text-on-surface-variant">Anomalous login detected</p>
+</div>
+<div class="w-4 h-4 rounded-full bg-primary pulse-primary shrink-0 z-20"></div>
+<div class="md:w-1/2 glass-panel p-md rounded-xl">
+<p class="font-label-md text-on-surface">Source identified: Unknown Linux terminal in Hanoi. Latency spikes suggest proxy usage.</p>
+</div>
+</div>
+<div class="flex flex-col md:flex-row-reverse gap-lg items-center reveal">
+<div class="md:w-1/2 md:text-left">
+<h4 class="font-display text-headline-md text-tertiary">10:24 AM</h4>
+<p class="text-on-surface-variant">Threat Intelligence Lookup</p>
+</div>
+<div class="w-4 h-4 rounded-full bg-tertiary shrink-0 z-20"></div>
+<div class="md:w-1/2 glass-panel p-md rounded-xl">
+<p class="font-label-md text-on-surface">Cross-referenced with global threat database. IP matches known credential stuffing botnet.</p>
+</div>
+</div>
+<div class="flex flex-col md:flex-row gap-lg items-center reveal">
+<div class="md:w-1/2 md:text-right">
+<h4 class="font-display text-headline-md text-primary">10:25 AM</h4>
+<p class="text-on-surface-variant">Tactical Confirmation</p>
+</div>
+<div class="w-4 h-4 rounded-full bg-primary shrink-0 z-20"></div>
+<div class="md:w-1/2 glass-panel p-md rounded-xl">
+<p class="font-label-md text-on-surface">Pattern matched: Account takeover attempt. Immediate remediation recommended.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- CENTRY RESPONDS -->
+<section class="relative py-xl px-md max-w-7xl mx-auto z-10 reveal">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-xl">
+<div class="order-2 lg:order-1 reveal">
+<div class="glass-panel p-lg rounded-2xl relative overflow-hidden">
+<div class="absolute top-0 right-0 p-md opacity-20">
+<span class="material-symbols-outlined text-[80px]">verified_user</span>
+</div>
+<h2 class="font-display text-headline-lg mb-md">Centry Responds</h2>
+<div class="space-y-md">
+<div class="flex items-center gap-md reveal">
+<span class="material-symbols-outlined text-success-glow font-bold">check_circle</span>
+<span class="font-headline-md">Account locked automatically</span>
+</div>
+<div class="flex items-center gap-md reveal">
+<span class="material-symbols-outlined text-success-glow font-bold">check_circle</span>
+<span class="font-headline-md">Email forwarding rule deleted</span>
+</div>
+<div class="flex items-center gap-md reveal">
+<span class="material-symbols-outlined text-success-glow font-bold">check_circle</span>
+<span class="font-headline-md">Payment changes reversed</span>
+</div>
+<div class="flex items-center gap-md reveal">
+<span class="material-symbols-outlined text-success-glow font-bold">check_circle</span>
+<span class="font-headline-md">Admin team notified in Taglish</span>
+</div>
+</div>
+</div>
+</div>
+<div class="order-1 lg:order-2 flex flex-col justify-center reveal">
+<div class="bg-surface-container-high p-lg rounded-2xl border-l-8 border-primary shadow-2xl relative">
+<span class="material-symbols-outlined absolute -top-4 -left-4 bg-primary text-on-primary p-2 rounded-full">smart_toy</span>
+<blockquote class="text-headline-md italic text-on-surface mb-md">
+                            "Boss, may suspicious login from Vietnam. Na-block ko na agad at in-revert yung mga changes. Safe na tayo!"
+                        </blockquote>
+<cite class="font-label-md text-primary">— Centry, your AI Security Kuya</cite>
+</div>
+</div>
+</div>
+</section>
+<!-- FINAL CTA -->
+<section class="relative py-xl px-md max-w-5xl mx-auto z-10 text-center reveal">
+<div class="glass-panel p-xl rounded-[2rem] border-primary/20 bg-gradient-to-br from-primary/10 via-surface-container to-surface-container-lowest reveal">
+<div class="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-md border border-primary/40 pulse-primary">
+<span class="material-symbols-outlined text-display text-primary">verified</span>
+</div>
+<h2 class="font-display text-[48px] md:text-[64px] mb-xs">Protected.</h2>
+    <br>
+<p class="font-headline-md text-on-surface-variant mb-xl">Your business is secure with Centry on duty. We watch the backbone while you grow the business.</p>
+<button class="bg-primary text-on-primary text-headline-md px-xl py-md rounded-xl font-bold hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-primary/30" onclick="window.location.href='register.html';">
+                    Get Started with Centry
+                </button>
+</div>
+</section>
+<footer class="relative z-10 w-full mt-xl border-t border-outline-variant/20 bg-surface-container-lowest reveal">
+<div class="w-full py-lg px-md flex flex-col md:flex-row justify-between items-center max-w-7xl mx-auto gap-lg">
+<div class="flex flex-col gap-xs items-center md:items-start">
+<span class="font-label-md text-label-md font-bold text-on-surface">SAGE</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">© SAGE 2024</span>
+</div>
+<div class="flex gap-lg flex-wrap justify-center">
+<a class="text-on-surface-variant font-label-sm text-label-sm hover:text-primary transition-colors" href="#">About Us</a>
+<a class="text-on-surface-variant font-label-sm text-label-sm hover:text-primary transition-colors" href="#">Contact</a>
+<a class="text-on-surface-variant font-label-sm text-label-sm hover:text-primary transition-colors" href="#">Terms</a>
+<a class="text-on-surface-variant font-label-sm text-label-sm hover:text-primary transition-colors" href="#">Cookie Policy</a>
+</div>
+</div>
+</footer>
+<div class="fixed bottom-md right-md z-50">
+<button class="floating-ai w-16 h-16 bg-primary text-on-primary rounded-full shadow-[0_0_30px_rgba(190,194,255,0.4)] flex items-center justify-center hover:scale-110 active:scale-95 transition-all group">
+<span class="material-symbols-outlined text-[32px]">smart_toy</span>
+<div class="absolute right-full mr-md py-2 px-4 bg-surface-container-highest border border-outline-variant rounded-lg text-label-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
+                    Hi! May tanong ka ba?
+                </div>
+</button>
+</div>
+</main>
+<script>
+        // Intersection Observer for Reveal on Scroll
+        const revealObserverOptions = {
+            threshold: 0.15,
+            rootMargin: "0px 0px -50px 0px"
+        };
+
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    // Once shown, we can stop observing it if we want it to stay permanent
+                    // revealObserver.unobserve(entry.target); 
+                }
+            });
+        }, revealObserverOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+        // Terminal text typing simulation (simple)
+        const logContainer = document.querySelector('.terminal-text');
+        
+        setInterval(() => {
+            const lines = logContainer.querySelectorAll('p');
+            if (lines.length > 25) {
+                // simple cleanup or reset if needed
+            }
+        }, 5000);
+
+        // Smooth micro-interaction for cards
+        document.querySelectorAll('.glass-panel').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+    </script>
+</body></html>
