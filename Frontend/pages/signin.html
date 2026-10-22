@@ -157,12 +157,12 @@
             </div>
 
             <form id="loginForm" class="space-y-lg">
-                <!-- Username Field -->
+                <!-- Email Field (used as the login "username") -->
                 <div class="space-y-xs group">
-                    <label for="username" class="font-label-md text-label-md text-on-surface-variant block ml-1">USERNAME</label>
+                    <label for="username" class="font-label-md text-label-md text-on-surface-variant block ml-1">EMAIL</label>
                     <div class="relative flex items-center glow-border border border-outline-variant rounded-lg bg-[#060e20] transition-all duration-300">
                         <span class="material-symbols-outlined absolute left-4 text-outline text-[20px]">person</span>
-                        <input type="text" id="username" name="username" required placeholder="cyber_sentinel_01" class="w-full bg-transparent border-none py-4 pl-12 pr-4 text-on-surface placeholder:text-outline/50 focus:ring-0 font-body-md">
+                        <input type="email" id="username" name="username" required placeholder="you@business.com" autocomplete="username" class="w-full bg-transparent border-none py-4 pl-12 pr-4 text-on-surface placeholder:text-outline/50 focus:ring-0 font-body-md">
                     </div>
                 </div>
 
@@ -171,7 +171,7 @@
                     <label for="password" class="font-label-md text-label-md text-on-surface-variant block ml-1">PASSWORD</label>
                     <div class="relative flex items-center glow-border border border-outline-variant rounded-lg bg-[#060e20] transition-all duration-300">
                         <span class="material-symbols-outlined absolute left-4 text-outline text-[20px]">lock</span>
-                        <input type="password" id="password" name="password" required placeholder="••••••••" class="w-full bg-transparent border-none py-4 pl-12 pr-4 text-on-surface placeholder:text-outline/50 focus:ring-0 font-body-md">
+                        <input type="password" id="password" name="password" required placeholder="••••••••" autocomplete="current-password" class="w-full bg-transparent border-none py-4 pl-12 pr-4 text-on-surface placeholder:text-outline/50 focus:ring-0 font-body-md">
                         <button type="button" class="absolute right-4 text-outline hover:text-primary transition-colors" onclick="togglePassword()">
                             <span class="material-symbols-outlined text-[20px]" id="passwordIcon">visibility</span>
                         </button>
@@ -185,6 +185,9 @@
                         <span class="material-symbols-outlined">login</span>
                     </button>
                 </div>
+
+                <!-- Login error, populated from the backend's "detail" on failure -->
+                <p id="loginError" class="hidden pt-sm text-center font-label-md text-label-md text-error"></p>
             </form>
 
             <div class="mt-lg text-center">
@@ -213,11 +216,39 @@
         </div>
     </footer>
 
+    <script src="assets/api.js"></script>
     <script>
         const loginForm = document.getElementById('loginForm');
         const usernameInput = document.getElementById('username');
         const passwordInput = document.getElementById('password');
         const submitBtn = document.getElementById('submitBtn');
+        const loginError = document.getElementById('loginError');
+
+        // If we already have a token (e.g. returning to /signin.html after a
+        // mid-session 401 bounced us here), skip straight back into the app.
+        // Use ?next=... to return to the page that triggered the redirect.
+        (function () {
+            if (Centry.getToken()) {
+                const next = new URLSearchParams(window.location.search).get('next');
+                window.location.href = next || 'dashboard.html';
+            }
+        })();
+
+        function showError(message) {
+            loginError.textContent = message;
+            loginError.classList.remove('hidden');
+        }
+        function clearError() {
+            loginError.classList.add('hidden');
+            loginError.textContent = '';
+        }
+
+        function setSigningIn(isSigningIn) {
+            if (isSigningIn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span> VALIDATING...';
+            }
+        }
 
         function togglePassword() {
             const icon = document.getElementById('passwordIcon');
@@ -233,7 +264,7 @@
         function validateInputs() {
             const isUserValid = usernameInput.value.trim().length > 0;
             const isPassValid = passwordInput.value.trim().length > 0;
-            
+
             if (isUserValid && isPassValid) {
                 submitBtn.disabled = false;
                 submitBtn.classList.remove('bg-secondary-container', 'text-on-secondary-container', 'cursor-not-allowed', 'opacity-60');
@@ -245,25 +276,34 @@
             }
         }
 
-        usernameInput.addEventListener('input', validateInputs);
-        passwordInput.addEventListener('input', validateInputs);
+        usernameInput.addEventListener('input', () => { clearError(); validateInputs(); });
+        passwordInput.addEventListener('input', () => { clearError(); validateInputs(); });
 
-        loginForm.addEventListener('submit', (e) => {
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            submitBtn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span> VALIDATING...';
-            setTimeout(() => {
+            clearError();
+            setSigningIn(true);
 
-                // TODO: Implement actual authentication logic here. For now, we simulate a successful login.
-                
+            try {
+                // Real POST /api/v1/auth/login (form-encoded, username = email).
+                // Centry.login stores the JWT in localStorage on success.
+                await Centry.login(usernameInput.value.trim(), passwordInput.value);
+
                 submitBtn.innerHTML = 'WELCOME  <span class="material-symbols-outlined">check_circle</span>';
                 submitBtn.classList.remove('bg-primary-container');
                 submitBtn.classList.add('bg-green-600', 'border-green-400');
-            }, 1500);
-            setTimeout(() => {
-                window.location.href="dashboard.html";
-            }, 3000);
-            
-        
+
+                // Honor ?next=<page> so a bounced user lands back where they were.
+                const next = new URLSearchParams(window.location.search).get('next');
+                setTimeout(() => {
+                    window.location.href = next || 'dashboard.html';
+                }, 800);
+            } catch (err) {
+                // err.message is the backend's "detail" (e.g. "Incorrect email or password").
+                showError(err.message || 'Sign in failed. Please try again.');
+                setSigningIn(false);
+                validateInputs();
+            }
         });
     </script>
 </body>

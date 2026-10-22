@@ -168,7 +168,7 @@
                     Customer Service
                 </a>
 <div class="h-[1px] bg-white/10 my-4 mx-4"></div>
-<button class="text-error hover:bg-error/10 flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-sm font-bold w-full text-left">
+<button id="logoutBtn" class="text-error hover:bg-error/10 flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-sm font-bold w-full text-left">
 <span class="material-symbols-outlined text-lg">logout</span>
                     Logout Session
                 </button>
@@ -194,11 +194,11 @@
 <div class="flex-grow grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
 <div class="space-y-2">
 <label class="font-label text-[10px] font-bold text-on-surface-variant uppercase tracking-wider opacity-60">Full Name</label>
-<input class="w-full bg-surface-container-lowest/50 border border-outline-variant rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-primary focus:outline-none transition-all placeholder:opacity-30" type="text" value="Rafael Santiago">
+<input class="w-full bg-surface-container-lowest/50 border border-outline-variant rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-primary focus:outline-none transition-all placeholder:opacity-30" type="text" id="profileFullName" value="Rafael Santiago" readonly>
 </div>
 <div class="space-y-2">
 <label class="font-label text-[10px] font-bold text-on-surface-variant uppercase tracking-wider opacity-60">Email Address</label>
-<input class="w-full bg-surface-container-lowest/50 border border-outline-variant rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-primary focus:outline-none transition-all placeholder:opacity-30" type="email" value="r.santiago@sage-ph.com">
+<input class="w-full bg-surface-container-lowest/50 border border-outline-variant rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-primary focus:outline-none transition-all placeholder:opacity-30" type="email" id="profileEmail" value="r.santiago@sage-ph.com" readonly>
 </div>
 <div class="space-y-2">
 <label class="font-label text-[10px] font-bold text-on-surface-variant uppercase tracking-wider opacity-60">Position</label>
@@ -401,8 +401,8 @@
 </div>
 <div class="p-4 border-t border-outline-variant bg-surface-container-highest">
 <div class="relative flex items-center">
-<input class="w-full bg-surface-container-lowest border-outline-variant rounded-lg py-2.5 pl-4 pr-10 text-xs focus:ring-1 focus:ring-primary focus:border-primary outline-none text-on-surface placeholder:text-on-surface-variant/40" placeholder="Type a command..." type="text">
-<button class="absolute right-2 text-primary hover:text-primary-fixed p-1">
+<input id="settings-chat-input" class="w-full bg-surface-container-lowest border-outline-variant rounded-lg py-2.5 pl-4 pr-10 text-xs focus:ring-1 focus:ring-primary focus:border-primary outline-none text-on-surface placeholder:text-on-surface-variant/40" placeholder="Type a command..." type="text">
+<button id="settings-chat-send" class="absolute right-2 text-primary hover:text-primary-fixed p-1">
 <span class="material-symbols-outlined text-lg">send</span>
 </button>
 </div>
@@ -413,11 +413,46 @@
 <div class="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-surface"></div>
 </button>
 </div>
+<script src="assets/api.js"></script>
 <script>
+    // settings.html is behind the login wall.
+    if (!Centry.requireAuth()) {
+        throw new Error('Not authenticated - redirecting to sign in.');
+    }
+
     function toggleChat() {
         const chat = document.getElementById('chat-window');
         chat.classList.toggle('hidden');
     }
+
+    // Logout - clears the stored JWT and returns to the sign-in page.
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+        Centry.logout('settings.html');
+    });
+
+    // Wire the floating AI assistant to the real /api/v1/chat/* endpoints.
+    Centry.initChat({
+        messagesId: 'chat-messages',
+        inputId: 'settings-chat-input',
+        sendId: 'settings-chat-send',
+        language: 'en',
+    });
+
+    // Populate the (read-only) profile fields from GET /api/v1/auth/me so the
+    // page shows the real signed-in account instead of hardcoded demo values.
+    (async () => {
+        try {
+            const user = await Centry.me();
+            if (user.full_name) document.getElementById('profileFullName').value = user.full_name;
+            if (user.email) document.getElementById('profileEmail').value = user.email;
+        } catch (err) {
+            // A 401 here already bounced us to signin via api.js; anything else
+            // is non-fatal (fields keep their placeholder values).
+            if (err.status && err.status !== 401) {
+                Centry.notify('Could not load profile: ' + (err.message || 'unknown error'), 'warning');
+            }
+        }
+    })();
 
     // Interactive field highlighting
     const inputs = document.querySelectorAll('input');

@@ -204,11 +204,14 @@
                     </div>
 
                     <div class="flex flex-col items-center gap-6 pt-6">
-                        <!-- This button only redirects to dashboad. This will not collect user inputs yet-->
-                        <button class="w-full md:w-auto md:min-w-[280px] px-10 py-5 bg-primary-container text-primary font-bold rounded-xl border border-primary/30 shadow-[0_0_15px_rgba(32,38,130,0.4)] hover:bg-primary-container/80 transition-all duration-300 active:scale-95 flex items-center justify-center gap-3 group submit-glow" id="submitBtn" type="submit" onclick="window.location.href='otp.html';"> 
+                        <!-- On submit this calls POST /api/v1/auth/register, then logs in and
+                             continues to otp.html (see the script at the bottom). -->
+                        <button class="w-full md:w-auto md:min-w-[280px] px-10 py-5 bg-primary-container text-primary font-bold rounded-xl border border-primary/30 shadow-[0_0_15px_rgba(32,38,130,0.4)] hover:bg-primary-container/80 transition-all duration-300 active:scale-95 flex items-center justify-center gap-3 group submit-glow" id="submitBtn" type="submit"> 
                             <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">bolt</span>
                             <span class="font-headline text-xl">Establish Connection</span>
                         </button>
+                        <!-- Registration error, populated from the backend's "detail" on failure -->
+                        <p id="registerError" class="hidden text-center font-body text-error"></p>
                         <p class="font-body text-on-surface-variant">
                             Already verified? 
                             <a class="text-primary hover:underline font-semibold transition-all ml-1" href="signin.html">Sign In</a>
@@ -237,22 +240,75 @@
         </div>
     </footer>
 
+    <script src="assets/api.js"></script>
     <script>
         // Form Interaction
         const form = document.getElementById('registrationForm');
         const submitBtn = document.getElementById('submitBtn');
-        
-        form.addEventListener('submit', (e) => {
+        const registerError = document.getElementById('registerError');
+
+        function showRegisterError(message) {
+            registerError.textContent = message;
+            registerError.classList.remove('hidden');
+        }
+
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
+            registerError.classList.add('hidden');
+
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            // Client-side guard before hitting the API (the backend also
+            // enforces min_length=8 on password - see app/schemas/auth.py).
+            if (password !== confirmPassword) {
+                showRegisterError('Passwords do not match.');
+                return;
+            }
+            if (password.length < 8) {
+                showRegisterError('Password must be at least 8 characters.');
+                return;
+            }
+
+            // Full name is built from the representative's given + surname.
+            const fullName = [
+                document.getElementById('givenName').value.trim(),
+                document.getElementById('surname').value.trim(),
+            ].filter(Boolean).join(' ');
+
             submitBtn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span> <span class="font-headline text-xl">Connecting...</span>';
             submitBtn.disabled = true;
             submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
-            
-            setTimeout(() => {
+
+            try {
+                // 1) Create the account. NOTE: the backend only persists email,
+                //    password, and full_name today - the other fields on this
+                //    form (birthdate, phone, business name/type, permit upload)
+                //    are collected in the UI but not stored yet. See
+                //    Frontend/README.md "What the backend stores".
+                await Centry.register({
+                    email: document.getElementById('email').value.trim(),
+                    password: password,
+                    full_name: fullName,
+                });
+
+                // 2) Registration alone doesn't log you in - sign in now so the
+                //    JWT is stored before we continue the flow.
+                await Centry.login(document.getElementById('email').value.trim(), password);
+
                 submitBtn.innerHTML = '<span class="material-symbols-outlined">check_circle</span> <span class="font-headline text-xl">Connection Established</span>';
                 submitBtn.classList.remove('bg-primary-container', 'border-primary/30');
                 submitBtn.classList.add('bg-green-600', 'border-green-400');
-            }, 2000);
+
+                // 3) Continue to the OTP step, then connect.html.
+                setTimeout(() => { window.location.href = 'otp.html'; }, 800);
+            } catch (err) {
+                // err.message is the backend's "detail" (e.g. duplicate email -> 409).
+                showRegisterError(err.message || 'Registration failed. Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+                submitBtn.innerHTML = '<span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">bolt</span> <span class="font-headline text-xl">Establish Connection</span>';
+            }
         });
 
         // File upload visual feedback

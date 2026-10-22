@@ -199,7 +199,16 @@
         <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Cookie Policy</a>
     </div>
 </footer>
+<script src="assets/api.js"></script>
 <script>
+    // OTP / email verification is a PLACEHOLDER step.
+    //
+    // The backend does not yet expose an OTP or email-verification endpoint
+    // (see Backend/app/routers/ - there is no /auth/otp route), so this screen
+    // only simulates a successful check before continuing to connect.html.
+    // It is safe to skip: register.html already logs the user in, so the JWT is
+    // stored and connect.html's login wall is satisfied. When a real OTP
+    // endpoint is added, wire the verify button to Centry.request("/api/v1/auth/otp/verify", ...).
     const inputs = document.querySelectorAll('.otp-input');
     const verifyBtn = document.getElementById('verify-btn');
     function moveToNext(el, index) {

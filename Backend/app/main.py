@@ -16,6 +16,11 @@ from app.routers import auth, oauth, verification, chat, events, webhooks
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# The insecure placeholder jwt_secret_key shipped as the default in
+# app/config.py. If we're still running with this exact value at startup,
+# anyone who reads the repo can forge valid JWTs - so warn loudly.
+INSECURE_JWT_DEFAULT = "CHANGE-ME-dev-only-insecure-default-secret-key"
+
 # The static pages live next to this repo's Backend/ dir, not inside it:
 #   <repo>/Backend/app/main.py  ->  <repo>/Frontend/pages/*.html
 # Served at "/" at the very bottom of this file - see the "Frontend" section.
@@ -24,6 +29,15 @@ FRONTEND_DIR = Path(__file__).resolve().parents[2] / "Frontend" / "pages"
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Refuse to pretend the default JWT secret is safe: it's committed in
+    # app/config.py, so a running server using it lets anyone forge tokens.
+    if settings.jwt_secret_key == INSECURE_JWT_DEFAULT:
+        logger.warning(
+            "SECURITY: jwt_secret_key is still the insecure committed default. "
+            "Set CENTRY_JWT_SECRET_KEY in .env (generate with `openssl rand -hex 32`) "
+            "before exposing this API - anyone can forge valid tokens otherwise."
+        )
+
     if settings.use_sqlite:
         # Sqlite is for convenience. 
         # Real (MySQL) schema changes go through Alembic instead: `alembic upgrade head`.

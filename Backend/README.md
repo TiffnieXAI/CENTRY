@@ -132,7 +132,10 @@ open with no events delivered until RabbitMQ is reachable.
 "Run" above). Every page that talks to the API does it through
 `Frontend/pages/assets/api.js`, which owns the base URL, the JWT in
 `localStorage`, and the Bearer header - see `Frontend/README.md` for the
-page-by-page wiring.
+page-by-page wiring. The auth flow (sign-in, register + auto-login), the
+platform OAuth connect page, the login wall on every protected page, the
+real-time `/ws/events` dashboard feed, the `/ws/live-verify` mic streaming,
+and the AI chat widget on each page are all wired to the endpoints below.
 
 ## AI feature templates
 
@@ -307,8 +310,11 @@ Frontend/
     signin.html             - POST /api/v1/auth/login
     register.html           - POST /api/v1/auth/register, then logs in
     otp.html                - placeholder (no backend endpoint yet - see Frontend/README.md)
-    connect.html            - GET /api/v1/oauth/{platform}/authorize + /connections
-    dashboard/incident/dailyReport/liveVerify/settings.html - behind the login wall; still mostly hardcoded UI
+    connect.html            - GET /api/v1/oauth/{platform}/authorize + /connections (+ Meta)
+    dashboard.html          - login wall + live /ws/events feed + AI chat
+    incident/dailyReport.html - login wall + AI chat (content still hardcoded demo data)
+    liveVerify.html         - login wall + real mic capture over /ws/live-verify + AI chat
+    settings.html           - login wall + GET /api/v1/auth/me profile + logout + AI chat
 
 alembic/
   env.py                    - builds the DB URL from app.config.settings, no separate config to keep in sync

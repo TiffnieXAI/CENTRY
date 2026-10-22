@@ -332,7 +332,7 @@
             <span class="material-symbols-outlined">close</span>
         </button>
     </div>
-    <div class="flex-grow overflow-y-auto p-md space-y-md matrix-scroll bg-surface-container-lowest/50">
+    <div class="flex-grow overflow-y-auto p-md space-y-md matrix-scroll bg-surface-container-lowest/50" id="report-chat-messages">
         <div class="text-center">
             <span class="text-[10px] font-label-sm text-on-surface-variant/40 bg-surface-container px-xs py-1 rounded uppercase tracking-widest">May 24, 2024</span>
         </div>
@@ -345,8 +345,8 @@
     </div>
     <div class="p-md bg-surface-container-highest rounded-b-xl border-t border-outline-variant">
         <div class="relative flex items-center">
-            <input class="w-full bg-surface-container-lowest border-white/10 rounded-lg py-2 pl-3 pr-10 text-sm focus:ring-1 focus:ring-primary focus:border-primary text-on-surface placeholder:text-on-surface-variant/40" placeholder="Type a command..." type="text">
-            <button class="absolute right-2 text-primary hover:text-primary-fixed">
+            <input id="report-chat-input" class="w-full bg-surface-container-lowest border-white/10 rounded-lg py-2 pl-3 pr-10 text-sm focus:ring-1 focus:ring-primary focus:border-primary text-on-surface placeholder:text-on-surface-variant/40" placeholder="Type a command..." type="text">
+            <button id="report-chat-send" class="absolute right-2 text-primary hover:text-primary-fixed">
                 <span class="material-symbols-outlined text-md">send</span>
             </button>
         </div>
@@ -357,7 +357,13 @@
     <span class="material-symbols-outlined text-[32px] group-hover:rotate-12 transition-transform">smart_toy</span>
 </button>
 
+<script src="assets/api.js"></script>
 <script class="">
+    // dailyReport.html is behind the login wall.
+    if (!Centry.requireAuth()) {
+        throw new Error('Not authenticated - redirecting to sign in.');
+    }
+
     let chatOpen = false;
     function toggleChat() {
         const chat = document.getElementById('ai-chat-window');
@@ -368,6 +374,14 @@
         }
         chatOpen = !chatOpen;
     }
+
+    // Wire the floating AI assistant to the real /api/v1/chat/* endpoints.
+    Centry.initChat({
+        messagesId: 'report-chat-messages',
+        inputId: 'report-chat-input',
+        sendId: 'report-chat-send',
+        language: 'en',
+    });
 </script>
 
 </body></html>

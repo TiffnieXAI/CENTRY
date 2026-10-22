@@ -140,6 +140,10 @@
 
             <!-- Integration Section -->
             <div class="w-full space-y-6">
+                <!-- Result banner, populated from the OAuth callback query string
+                     (?connected=SHOPEE&status=connected|error&detail=...). -->
+                <div id="connectBanner" class="hidden"></div>
+
                 <div class="flex items-center gap-3 pb-2 border-b border-white/5 w-full">
                     <span class="material-symbols-outlined text-primary">storefront</span>
                     <h3 class="font-headline text-xl text-on-surface font-semibold">Connect to E-Commerce Platform</h3>
@@ -155,7 +159,7 @@
                             </div>
                             <span class="font-body text-lg font-semibold text-on-surface">Shopee</span>
                         </div>
-                        <button class="px-6 py-2.5 bg-primary-container text-primary font-bold font-headline rounded-lg border border-primary/30 shadow-[0_0_10px_rgba(32,38,130,0.3)] hover:bg-primary-container/80 transition-all active:scale-95 flex items-center gap-2 submit-glow" id="connectShopee" data-name="Shopee" disabled>
+                        <button class="px-6 py-2.5 bg-primary-container text-primary font-bold font-headline rounded-lg border border-primary/30 shadow-[0_0_10px_rgba(32,38,130,0.3)] hover:bg-primary-container/80 transition-all active:scale-95 flex items-center gap-2 submit-glow" id="connectShopee" data-name="Shopee" data-platform="SHOPEE" disabled>
                             <span>Connect</span>
                             <span class="material-symbols-outlined text-sm">arrow_forward</span>
                         </button>
@@ -169,7 +173,7 @@
                             </div>
                             <span class="font-body text-lg font-semibold text-on-surface">Lazada</span>
                         </div>
-                        <button class="px-6 py-2.5 bg-primary-container text-primary font-bold font-headline rounded-lg border border-primary/30 shadow-[0_0_10px_rgba(32,38,130,0.3)] hover:bg-primary-container/80 transition-all active:scale-95 flex items-center gap-2 submit-glow" id="connectLazada" data-name="Lazada" disabled>
+                        <button class="px-6 py-2.5 bg-primary-container text-primary font-bold font-headline rounded-lg border border-primary/30 shadow-[0_0_10px_rgba(32,38,130,0.3)] hover:bg-primary-container/80 transition-all active:scale-95 flex items-center gap-2 submit-glow" id="connectLazada" data-name="Lazada" data-platform="LAZADA" disabled>
                             <span>Connect</span>
                             <span class="material-symbols-outlined text-sm">arrow_forward</span>
                         </button>
@@ -211,7 +215,22 @@
                             </div>
                             <span class="font-body text-lg font-semibold text-on-surface">TikTok Shop</span>
                         </div>
-                        <button class="px-6 py-2.5 bg-primary-container text-primary font-bold font-headline rounded-lg border border-primary/30 shadow-[0_0_10px_rgba(32,38,130,0.3)] hover:bg-primary-container/80 transition-all active:scale-95 flex items-center gap-2 submit-glow" id="connectTikTok" data-name="TikTok Shop" disabled>
+                        <button class="px-6 py-2.5 bg-primary-container text-primary font-bold font-headline rounded-lg border border-primary/30 shadow-[0_0_10px_rgba(32,38,130,0.3)] hover:bg-primary-container/80 transition-all active:scale-95 flex items-center gap-2 submit-glow" id="connectTikTok" data-name="TikTok Shop" data-platform="TIKTOK_SHOP" disabled>
+                            <span>Connect</span>
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        </button>
+                    </div>
+
+                    <!-- Meta (Facebook Page) - social activity telemetry.
+                         Backed by app/core/oauth/meta.py (standard FB OAuth 2.0). -->
+                    <div class="flex items-center justify-between p-4 rounded-xl bg-surface-container-lowest border border-outline-variant/30 transition-all hover:border-outline-variant/60">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-lg bg-primary-container/20 flex items-center justify-center text-primary border border-primary/20">
+                                <span class="material-symbols-outlined text-2xl">public</span>
+                            </div>
+                            <span class="font-body text-lg font-semibold text-on-surface">Meta (Facebook Page)</span>
+                        </div>
+                        <button class="px-6 py-2.5 bg-primary-container text-primary font-bold font-headline rounded-lg border border-primary/30 shadow-[0_0_10px_rgba(32,38,130,0.3)] hover:bg-primary-container/80 transition-all active:scale-95 flex items-center gap-2 submit-glow" id="connectMeta" data-name="Meta" data-platform="META" disabled>
                             <span>Connect</span>
                             <span class="material-symbols-outlined text-sm">arrow_forward</span>
                         </button>
@@ -254,55 +273,93 @@
     </div>
 </footer>
 
+<script src="assets/api.js"></script>
 <script>
+    // connect.html is behind the login wall - the OAuth authorize call needs a
+    // Bearer token, so bail to signin.html if we're not authenticated.
+    if (!Centry.requireAuth()) {
+        // requireAuth() already redirected; stop the rest of this script from running.
+        throw new Error('Not authenticated - redirecting to sign in.');
+    }
+
+    // Platform values must match the backend's PlatformType enum
+    // (see Backend/app/models/models.py). Buttons WITHOUT a data-platform
+    // attribute (Temu, Shein) are rendered "Coming soon" and stay inert -
+    // there is no backend endpoint behind them yet.
+    const SUPPORTED_PLATFORMS = ['SHOPEE', 'LAZADA', 'TIKTOK_SHOP', 'META'];
+
     // Represents a single marketplace connect button: owns its own
-    // state (disconnected / connecting / connected) and re-renders itself.
+    // state (disconnected / connecting / connected / coming-soon) and
+    // re-renders itself.
     class Marketplace {
-        constructor(buttonId) {
-            this.button = document.getElementById(buttonId);
-            this.name = this.button.dataset.name; // read name from data-name instead of hardcoding
-            this.status = "disconnected";
-            this.button.addEventListener("click", this.handleClick.bind(this));
+        constructor(button) {
+            this.button = button;
+            this.name = button.dataset.name;          // read name from data-name
+            this.platform = button.dataset.platform || null; // backend PlatformType, or null
+            this.status = this.platform ? 'disconnected' : 'coming-soon';
+            if (this.platform) {
+                this.button.addEventListener('click', this.handleClick.bind(this));
+            }
+            this.render();
         }
 
-        handleClick() {
-            if (this.status !== "disconnected") return; // ignore mid-animation / already-connected clicks
-            this.status = "connecting";
+        async handleClick() {
+            if (this.status !== 'disconnected') return; // ignore mid-animation / already-connected clicks
+            this.status = 'connecting';
             this.render();
 
-            // TODO: replace with a real async connection call.
-            // Assuming success for now, per current requirements.
-            setTimeout(() => {
-                this.status = "connected";
+            try {
+                // GET /api/v1/oauth/{platform}/authorize -> { authorize_url }.
+                // startConnection() navigates the browser to the platform's own
+                // consent page; the platform then redirects back to the backend
+                // callback, which bounces the browser here with
+                // ?connected=...&status=... (handled in showCallbackResult below).
+                await Centry.startConnection(this.platform);
+                // NOTE: on success the browser leaves this page, so we never
+                // flip to "connected" here - that state comes from re-reading
+                // GET /api/v1/oauth/connections after the callback redirect.
+            } catch (err) {
+                Centry.notify('Could not start ' + this.name + ' connection: ' + (err.message || 'unknown error'), 'error');
+                this.status = 'disconnected';
                 this.render();
-            }, 2000);
+            }
+        }
+
+        // Flip this button to "connected" (used after loading saved connections).
+        markConnected() {
+            this.status = 'connected';
+            this.render();
         }
 
         // Enable/disable this button based on whether the email input is valid.
-        // Only takes effect while still disconnected — a connecting/connected
+        // Only takes effect while still disconnected - a connecting/connected
         // button should never be re-disabled by editing the email afterwards.
         setEnabled(enabled) {
-            if (this.status === "disconnected") {
+            if (this.status === 'disconnected') {
                 this.button.disabled = !enabled;
             }
         }
 
         render() {
             // Remove previous state classes
-            this.button.classList.remove("connecting", "bg-green-600", "border-green-400");
+            this.button.classList.remove('connecting', 'bg-green-600', 'border-green-400', 'opacity-60', 'cursor-not-allowed');
 
-            if (this.status === "connecting") {
+            if (this.status === 'coming-soon') {
                 this.button.disabled = true;
-                this.button.classList.add("connecting");
+                this.button.classList.add('opacity-60', 'cursor-not-allowed');
+                this.button.innerHTML = 'Coming soon';
+            } else if (this.status === 'connecting') {
+                this.button.disabled = true;
+                this.button.classList.add('connecting');
                 this.button.innerHTML = `<span class="material-symbols-outlined animate-spin">sync</span> Connecting...`;
-            } else if (this.status === "connected") {
+            } else if (this.status === 'connected') {
                 this.button.disabled = true; // Disable connected buttons
-                this.button.classList.add("bg-green-600", "border-green-400");
+                this.button.classList.add('bg-green-600', 'border-green-400');
                 this.button.innerHTML = `Connected <span class="material-symbols-outlined">check_circle</span>`;
             } else {
                 // Disconnected state
-                this.button.disabled = false;
-                this.button.innerHTML = `Connect`;
+                this.button.innerHTML = `Connect <span class="material-symbols-outlined text-sm">arrow_forward</span>`;
+                // disabled-ness is managed by setEnabled() based on the email field
             }
         }
     }
@@ -313,12 +370,12 @@
         constructor(emailInputId, marketplaces) {
             this.emailInput = document.getElementById(emailInputId);
             this.marketplaces = marketplaces;
-            this.emailInput.addEventListener("input", this.validate.bind(this));
+            this.emailInput.addEventListener('input', this.validate.bind(this));
             this.validate(); // run once on load in case of a pre-filled value
         }
 
         isValidEmail(value) {
-            // simple, good-enough pattern — swap for a stricter regex if you need one
+            // simple, good-enough pattern - swap for a stricter regex if you need one
             return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
         }
 
@@ -328,16 +385,90 @@
         }
     }
 
-    // One instance per button — no more copy-pasted listeners.
-    const marketplaces = [
-        new Marketplace("connectShopee"), // Fixed ID typo
-        new Marketplace("connectLazada"),
-        new Marketplace("connectTemu"),
-        new Marketplace("connectShein"),
-        new Marketplace("connectTikTok"),
-    ];
+    // One instance per supported-platform button.
+    const marketplacesById = {};
+    SUPPORTED_PLATFORMS.forEach((platform) => {
+        // Match the button whose data-platform equals this platform value.
+        const btn = document.querySelector(`button[data-platform="${platform}"]`);
+        if (btn) {
+            const m = new Marketplace(btn);
+            marketplacesById[platform] = m;
+        }
+    });
 
-    new ConnectionManager("userEmail", marketplaces);
+    // Temu + Shein have no backend endpoint yet -> render them "Coming soon".
+    ['connectTemu', 'connectShein'].forEach((id) => {
+        const btn = document.getElementById(id);
+        if (btn) new Marketplace(btn); // no data-platform -> coming-soon state
+    });
+
+    const allMarketplaces = Object.values(marketplacesById);
+    new ConnectionManager('userEmail', allMarketplaces);
+
+    // -------------------------------------------------------------------------
+    // OAuth callback result banner
+    // -------------------------------------------------------------------------
+    // After the platform redirects back, the backend sends the browser here as:
+    //   connect.html?connected=SHOPEE&status=connected
+    //   connect.html?connected=SHOPEE&status=error&detail=<reason>
+    // Show that as a banner, clean the query string, then re-read the saved
+    // connections so button states match what's actually stored.
+    async function showCallbackResult() {
+        const params = new URLSearchParams(window.location.search);
+        const connected = params.get('connected');
+        const status = params.get('status');
+        const detail = params.get('detail');
+
+        if (connected && status) {
+            const banner = document.getElementById('connectBanner');
+            const ok = status === 'connected';
+            banner.className = ok
+                ? 'w-full mb-6 p-4 rounded-lg border bg-green-500/10 border-green-500/30 text-green-400 flex items-center gap-3'
+                : 'w-full mb-6 p-4 rounded-lg border bg-error/10 border-error/30 text-error flex items-center gap-3';
+            banner.innerHTML =
+                `<span class="material-symbols-outlined">${ok ? 'check_circle' : 'error'}</span>` +
+                `<span><strong>${connected}</strong> ${ok ? 'connected successfully.' : 'failed to connect.'}` +
+                (detail ? ` <span class="opacity-80">(${detail})</span>` : '') + `</span>`;
+            banner.classList.remove('hidden');
+
+            // Strip the query string so a refresh doesn't re-show the banner.
+            window.history.replaceState({}, '', window.location.pathname);
+        }
+    }
+
+    // Load saved connections and mark the matching buttons connected.
+    async function loadConnections() {
+        try {
+            const list = await Centry.connections();
+            list.forEach((conn) => {
+                // conn.platform_type is the backend enum value (e.g. "SHOPEE").
+                const m = marketplacesById[conn.platform_type];
+                if (m) m.markConnected();
+            });
+        } catch (err) {
+            // Don't hard-fail the page - the user can still start a connection.
+            Centry.notify('Could not load saved connections: ' + (err.message || 'unknown error'), 'warning');
+        }
+    }
+
+    // Prefill the email box with the signed-in user's email so the Connect
+    // buttons are immediately usable (the email gate is a UI nicety only -
+    // the actual OAuth identity comes from the JWT, not this field).
+    (async () => {
+        try {
+            const user = await Centry.me();
+            if (user && user.email) {
+                const emailInput = document.getElementById('userEmail');
+                if (emailInput && !emailInput.value) {
+                    emailInput.value = user.email;
+                    emailInput.dispatchEvent(new Event('input'));
+                }
+            }
+        } catch (err) { /* non-fatal - user can type the email manually */ }
+    })();
+
+    showCallbackResult();
+    loadConnections();
 </script>
 
 </body>
