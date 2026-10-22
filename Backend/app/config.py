@@ -22,6 +22,20 @@ class Settings(BaseSettings):
     oauth_redirect_base_url: str = "http://localhost:8000"
     oauth_state_expire_minutes: int = 10  # how long a user has to complete the OAuth flow
 
+    # Frontend
+    # Origins the browser is allowed to call this API from. The pages are
+    # served by this app itself (see the "Frontend" section in app/main.py),
+    # which is same-origin and needs no CORS at all - these are for running
+    # the pages from a separate dev server or file:// instead.
+    # Override with JSON, e.g. CENTRY_CORS_ALLOWED_ORIGINS='["https://app.example.com"]'
+    cors_allowed_origins: list[str] = [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "null",  # pages opened directly from disk (file://)
+    ]
+
     # Shopee Open Platform (open.shopee.com)
     shopee_partner_id: str = ""
     shopee_partner_key: str = ""

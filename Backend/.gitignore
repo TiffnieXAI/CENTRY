@@ -8,3 +8,10 @@ __pycache__/
 
 # Environment Variables
 .env
+
+# Local SQLite dev database (CENTRY_USE_SQLITE=true) - never commit this.
+# It stores bcrypt password hashes AND plaintext platform OAuth tokens
+# (see access_token/refresh_token in app/models/models.py).
+centry_dev.db
+*.db
+*.sqlite3
