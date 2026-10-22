@@ -393,13 +393,7 @@
     </div>
 </footer>
 
-<script src="assets/api.js"></script>
 <script>
-    // incident.html is behind the login wall.
-    if (!Centry.requireAuth()) {
-        throw new Error('Not authenticated - redirecting to sign in.');
-    }
-
     const incidents = {
         'inc-001': {
             badge: 'Critical',
@@ -472,7 +466,7 @@
             <span class="material-symbols-outlined">close</span>
         </button>
     </div>
-    <div class="flex-grow overflow-y-auto p-md space-y-md custom-scrollbar bg-surface-container-lowest/50" id="incident-chat-messages">
+    <div class="flex-grow overflow-y-auto p-md space-y-md custom-scrollbar bg-surface-container-lowest/50">
         <div class="text-center">
             <span class="text-[10px] font-label-sm text-on-surface-variant/40 bg-surface-container px-xs py-1 rounded">OCT 24, 2023</span>
         </div>
@@ -497,8 +491,8 @@
     </div>
     <div class="p-md bg-surface-container-high rounded-b-xl border-t border-outline-variant">
         <div class="relative flex items-center">
-            <input id="incident-chat-input" class="w-full bg-surface-container-lowest border-white/10 rounded-lg py-2 pl-3 pr-10 text-sm focus:ring-1 focus:ring-primary focus:border-primary text-on-surface placeholder:text-on-surface-variant/40" placeholder="Type a command..." type="text">
-            <button id="incident-chat-send" class="absolute right-2 text-primary hover:text-primary">
+            <input class="w-full bg-surface-container-lowest border-white/10 rounded-lg py-2 pl-3 pr-10 text-sm focus:ring-1 focus:ring-primary focus:border-primary text-on-surface placeholder:text-on-surface-variant/40" placeholder="Type a command..." type="text">
+            <button class="absolute right-2 text-primary hover:text-primary">
                 <span class="material-symbols-outlined text-md">send</span>
             </button>
         </div>
@@ -520,14 +514,6 @@
       }
       chatOpen = !chatOpen;
     }
-
-    // Wire the floating AI assistant to the real /api/v1/chat/* endpoints.
-    Centry.initChat({
-      messagesId: 'incident-chat-messages',
-      inputId: 'incident-chat-input',
-      sendId: 'incident-chat-send',
-      language: 'en',
-    });
 </script>
 
 </body>

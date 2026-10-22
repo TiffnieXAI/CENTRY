@@ -342,7 +342,7 @@
 <span class="material-symbols-outlined">close</span>
 </button>
 </div>
-<div class="flex-grow overflow-y-auto p-md space-y-md matrix-scroll bg-surface-container-lowest/50" id="lv-chat-messages">
+<div class="flex-grow overflow-y-auto p-md space-y-md matrix-scroll bg-surface-container-lowest/50">
 <div class="text-center"><span class="text-[10px] font-label-sm text-on-surface-variant/40 bg-surface-container px-xs py-1 rounded">MAY 24, 2024</span></div>
 <div class="flex flex-col items-start max-w-[85%]">
 <div class="bg-surface-variant p-sm rounded-lg rounded-tl-none border border-white/5">
@@ -353,8 +353,8 @@
 </div>
 <div class="p-md bg-surface-container-highest rounded-b-xl border-t border-outline-variant">
 <div class="relative flex items-center">
-<input id="lv-chat-input" class="w-full bg-surface-container-lowest border-white/10 rounded-lg py-2 pl-3 pr-10 text-sm focus:ring-1 focus:ring-primary focus:border-primary text-on-surface placeholder:text-on-surface-variant/40" placeholder="Type a command..." type="text">
-<button id="lv-chat-send" class="absolute right-2 text-primary hover:text-primary-fixed">
+<input class="w-full bg-surface-container-lowest border-white/10 rounded-lg py-2 pl-3 pr-10 text-sm focus:ring-1 focus:ring-primary focus:border-primary text-on-surface placeholder:text-on-surface-variant/40" placeholder="Type a command..." type="text">
+<button class="absolute right-2 text-primary hover:text-primary-fixed">
 <span class="material-symbols-outlined text-md">send</span>
 </button>
 </div>
@@ -364,7 +364,6 @@
 <button class="fixed bottom-6 right-6 z-[101] w-14 h-14 bg-primary text-on-primary rounded-full shadow-[0_0_20px_rgba(190,194,255,0.4)] flex items-center justify-center glow-hover transition-all active:scale-95 group" onclick="toggleChat()">
 <span class="material-symbols-outlined text-[32px] group-hover:rotate-12 transition-transform">smart_toy</span>
 </button>
-<script src="assets/api.js"></script>
 <script>
         let chatOpen = false;
         function toggleChat() {
@@ -377,171 +376,30 @@
             chatOpen = !chatOpen;
         }
 
-        // liveVerify.html is behind the login wall (the WS needs a JWT).
-        if (!Centry.requireAuth()) {
-            throw new Error('Not authenticated - redirecting to sign in.');
-        }
-
-        // Wire the floating AI assistant (can be scoped to this verification
-        // session via verificationSessionId once a call is in progress).
-        Centry.initChat({
-            messagesId: 'lv-chat-messages',
-            inputId: 'lv-chat-input',
-            sendId: 'lv-chat-send',
-            language: 'en',
-        });
-
-        // -------------------------------------------------------------------------
-        // Live Verify: real mic capture -> WS /ws/live-verify
-        // -------------------------------------------------------------------------
-        // Protocol (see Backend/app/routers/verification.py):
-        //   1. Connect to /ws/live-verify?token=<jwt>.
-        //   2. Server replies with { type: "session_initialized", session_id, ... }.
-        //   3. We stream raw binary audio chunks; after each one the server
-        //      analyzes it and pushes back a { type: "risk_update", ... } frame
-        //      carrying aggregated_risk_score (0-100) + aggregated_risk_level.
-        //   4. Sending the text "END" (or closing the socket) finishes the call.
-        //
-        // Audio format: we capture the mic via Web Audio, downsample to mono
-        // 16 kHz, and send signed 16-bit PCM in ~1s chunks. The backend's AI
-        // models are currently stubs, so the exact encoding doesn't matter yet
-        // - but this is a sane, documented default to keep when real models land.
-        const TARGET_SAMPLE_RATE = 16000;
-        const CHUNK_MS = 1000;
-
         const micBtn = document.getElementById('micToggle');
         const overlay = document.getElementById('permissionOverlay');
 
-        let streaming = false;
-        let audioContext = null;
-        let mediaStream = null;
-        let processor = null;
-        let ws = null;
-        let chunkBuffers = [];
-        let chunkSamples = 0;
-        let waveInterval = null;
-
-        function setMicState(active) {
-            streaming = active;
-            micBtn.classList.toggle('bg-cyber', !active);
-            micBtn.classList.toggle('bg-red-600', active);
-            const icon = micBtn.querySelector('.material-symbols-outlined');
-            if (icon) icon.textContent = active ? 'mic_off' : 'mic';
-        }
-
-        function startWaveform() {
-            const bars = document.querySelectorAll('.waveform-bar');
-            waveInterval = setInterval(() => {
-                bars.forEach(bar => { bar.style.height = (Math.floor(Math.random() * 60) + 10) + 'px'; });
-            }, 100);
-        }
-        function stopWaveform() { if (waveInterval) { clearInterval(waveInterval); waveInterval = null; } }
-
-        // Downsample Float32 audio to mono PCM16 at the target rate.
-        function floatToPCM16(float32, sourceRate) {
-            const ratio = sourceRate / TARGET_SAMPLE_RATE;
-            const newLength = Math.floor(float32.length / ratio);
-            const result = new Int16Array(newLength);
-            for (let i = 0; i < newLength; i++) {
-                const sample = float32[Math.floor(i * ratio)];
-                // Clamp to [-1, 1] then scale to the int16 range.
-                const s = Math.max(-1, Math.min(1, sample));
-                result[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
-            }
-            return result;
-        }
-
-        function flushChunk() {
-            if (!chunkBuffers.length || !ws || ws.readyState !== WebSocket.OPEN) {
-                chunkBuffers = []; chunkSamples = 0; return;
-            }
-            const merged = new Int16Array(chunkSamples);
-            let offset = 0;
-            chunkBuffers.forEach(buf => { merged.set(buf, offset); offset += buf.length; });
-            // Send as raw binary - the server reads message["bytes"].
-            ws.send(merged.buffer);
-            chunkBuffers = []; chunkSamples = 0;
-        }
-
-        function handleRiskUpdate(frame) {
-            const score = Math.round(frame.aggregated_risk_score ?? 0);
-            updateThreatUI(score);
-
-            const level = (frame.aggregated_risk_level || '').toUpperCase();
-            const label = document.querySelector('.glass-panel.bg-surface-container-low .absolute.inset-0.flex.flex-col span:nth-child(2)');
-            if (label && level) {
-                label.textContent = level + ' RISK';
-            }
-            if (frame.recommend_autonomous_block) {
-                Centry.notify('Critical risk - autonomous block recommended.', 'error');
-            }
-        }
-
-        async function startStreaming() {
-            overlay.classList.remove('opacity-0', 'pointer-events-none');
-            try {
-                mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            } catch (err) {
-                overlay.classList.add('opacity-0', 'pointer-events-none');
-                Centry.notify('Microphone access denied: ' + (err.message || err.name || 'unknown error'), 'error');
-                return;
-            }
-            overlay.classList.add('opacity-0', 'pointer-events-none');
-
-            audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: TARGET_SAMPLE_RATE });
-            const source = audioContext.createMediaStreamSource(mediaStream);
-            // ScriptProcessor is deprecated but universally supported and simple;
-            // swap to an AudioWorklet when we revisit the audio pipeline.
-            processor = audioContext.createScriptProcessor(4096, 1, 1);
-            processor.onaudioprocess = (e) => {
-                const float32 = e.inputBuffer.getChannelData(0);
-                const pcm = floatToPCM16(float32, audioContext.sampleRate);
-                chunkBuffers.push(pcm);
-                chunkSamples += pcm.length;
-                if (chunkSamples >= (TARGET_SAMPLE_RATE * CHUNK_MS) / 1000) flushChunk();
-            };
-            source.connect(processor);
-            processor.connect(audioContext.destination);
-
-            ws = new WebSocket(Centry.wsUrl('/ws/live-verify'));
-            ws.binaryType = 'arraybuffer';
-            ws.onmessage = (evt) => {
-                let frame; try { frame = JSON.parse(evt.data); } catch (e) { return; }
-                if (frame.type === 'risk_update') handleRiskUpdate(frame);
-                else if (frame.type === 'error') Centry.notify(frame.detail || 'Analysis error', 'warning');
-            };
-            ws.onclose = () => { if (streaming) stopStreaming(true); };
-
-            setMicState(true);
-            startWaveform();
-        }
-
-        function stopStreaming(fromServer) {
-            setMicState(false);
-            stopWaveform();
-            if (!fromServer && ws && ws.readyState === WebSocket.OPEN) {
-                flushChunk();
-                ws.send('END'); // tell the backend to complete the session
-            }
-            if (processor) { try { processor.disconnect(); } catch (e) {} processor = null; }
-            if (audioContext) { try { audioContext.close(); } catch (e) {} audioContext = null; }
-            if (mediaStream) { mediaStream.getTracks().forEach(t => t.stop()); mediaStream = null; }
-            if (ws) { try { ws.close(); } catch (e) {} ws = null; }
-            chunkBuffers = []; chunkSamples = 0;
-        }
-
         micBtn.addEventListener('click', () => {
-            if (streaming) stopStreaming(false);
-            else startStreaming();
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+            
+            const bars = document.querySelectorAll('.waveform-bar');
+            const interval = setInterval(() => {
+                bars.forEach(bar => {
+                    const h = Math.floor(Math.random() * 60) + 10;
+                    bar.style.height = h + 'px';
+                });
+            }, 100);
+
+            setTimeout(() => {
+                overlay.classList.add('opacity-0', 'pointer-events-none');
+            }, 3000);
         });
     </script>
 
 
 <script class="">
 (function() {
-    // Exposed globally so the Live Verify WebSocket handler (script above) can
-    // drive this gauge with real risk_update scores from the backend.
-    window.updateThreatUI = function updateThreatUI(percentage) {
+    function updateThreatUI(percentage) {
         const textElement = document.querySelector('.glass-panel.bg-surface-container-low .absolute.inset-0.flex.flex-col span.text-4xl');
         const ringElement = document.querySelector('.glass-panel.bg-surface-container-low svg circle:nth-child(2)');
         const riskLabel = document.querySelector('.glass-panel.bg-surface-container-low .absolute.inset-0.flex.flex-col span:nth-child(2)');
@@ -576,6 +434,6 @@
     }
 
     // Initialize with current value
-    window.updateThreatUI(92);
+    updateThreatUI(92);
 })();
 </script></body></html>
